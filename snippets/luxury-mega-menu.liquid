@@ -1,0 +1,168 @@
+{% comment %}
+  Renders a Luxury Image Mega Menu for a navigation item.
+
+  Accepts:
+  - link: {Object} Menu link object
+  - block: {Object} Mega menu block from section.blocks
+{% endcomment %}
+
+{%- liquid
+  assign columns = block.settings.columns_desktop | default: '5'
+  assign image_ratio = block.settings.image_ratio | default: 'wide'
+  assign bg_color = block.settings.bg_color | default: '#FFFFFF'
+  assign text_color = block.settings.text_color | default: '#121212'
+
+  # Check if custom cards are configured in block settings
+  assign has_custom_cards = false
+  for i in (1..6)
+    assign col_key = 'card_' | append: i | append: '_collection'
+    assign img_key = 'card_' | append: i | append: '_image'
+    assign title_key = 'card_' | append: i | append: '_title'
+    if block.settings[col_key] != blank or block.settings[img_key] != blank or block.settings[title_key] != blank
+      assign has_custom_cards = true
+      break
+    endif
+  endfor
+-%}
+
+<header-menu class="header-menu--has-mega">
+  <details id="Details-HeaderMenu-{{ link.handle }}" class="mega-menu luxury-mega-menu-details" {{ block.shopify_attributes }}>
+    <summary
+      id="HeaderMenu-{{ link.handle }}"
+      class="header__menu-item list-menu__item link focus-inset"
+      {% if link.url != blank and link.url != '#' %}
+        data-url="{{ link.url }}"
+      {% endif %}
+    >
+      <span
+        {%- if link.child_active or link.current %}
+          class="header__active-menu-item"
+        {% endif %}
+      >
+        {{- link.title | escape -}}
+      </span>
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </summary>
+    <div
+      id="MegaMenu-Content-{{ link.handle }}"
+      class="mega-menu__content luxury-mega-menu motion-reduce global-settings-popup"
+      tabindex="-1"
+      style="--luxury-mega-bg: {{ bg_color }}; --luxury-mega-text: {{ text_color }};"
+    >
+      <div class="luxury-mega-menu__inner page-width">
+        <ul class="luxury-mega-menu__grid luxury-mega-menu__grid--{{ columns }}" role="list">
+          {%- if has_custom_cards -%}
+            {%- for i in (1..6) -%}
+              {%- liquid
+                assign col_key = 'card_' | append: i | append: '_collection'
+                assign img_key = 'card_' | append: i | append: '_image'
+                assign title_key = 'card_' | append: i | append: '_title'
+                assign sub_key = 'card_' | append: i | append: '_subtitle'
+                assign url_key = 'card_' | append: i | append: '_url'
+
+                assign card_col = block.settings[col_key]
+                assign card_img = block.settings[img_key]
+                assign card_title = block.settings[title_key]
+                assign card_subtitle = block.settings[sub_key]
+                assign card_url = block.settings[url_key]
+
+                if card_col == blank and card_img == blank and card_title == blank
+                  continue
+                endif
+
+                if card_title == blank and card_col != blank
+                  assign card_title = card_col.title
+                endif
+
+                if card_url == blank and card_col != blank
+                  assign card_url = card_col.url
+                endif
+
+                if card_img == blank and card_col != blank
+                  if card_col.featured_image != blank
+                    assign card_img = card_col.featured_image
+                  elsif card_col.products.first != blank and card_col.products.first.featured_image != blank
+                    assign card_img = card_col.products.first.featured_image
+                  endif
+                endif
+              -%}
+
+              <li class="luxury-mega-menu__item">
+                <a href="{{ card_url | default: '#' }}" class="luxury-mega-menu__card-link">
+                  <div class="luxury-mega-menu__media-wrapper luxury-mega-menu__media--{{ image_ratio }}">
+                    {%- if card_img != blank -%}
+                      {{
+                        card_img
+                        | image_url: width: 800
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '(min-width: 990px) 20vw, 50vw',
+                          widths: '250, 400, 600, 800',
+                          class: 'luxury-mega-menu__image',
+                          alt: card_title
+                      }}
+                    {%- else -%}
+                      <div class="luxury-mega-menu__placeholder">
+                        {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                  <div class="luxury-mega-menu__info">
+                    <h3 class="luxury-mega-menu__title">{{ card_title | escape }}</h3>
+                    {%- if card_subtitle != blank -%}
+                      <span class="luxury-mega-menu__subtitle">{{ card_subtitle | escape }}</span>
+                    {%- endif -%}
+                  </div>
+                </a>
+              </li>
+            {%- endfor -%}
+          {%- elsif link.links != blank -%}
+            {%- for childlink in link.links -%}
+              {%- liquid
+                assign card_title = childlink.title
+                assign card_url = childlink.url
+                assign card_img = nil
+
+                if childlink.type == 'collection_link' and childlink.object != blank
+                  if childlink.object.featured_image != blank
+                    assign card_img = childlink.object.featured_image
+                  elsif childlink.object.products.first != blank and childlink.object.products.first.featured_image != blank
+                    assign card_img = childlink.object.products.first.featured_image
+                  endif
+                elsif childlink.type == 'product_link' and childlink.object != blank
+                  assign card_img = childlink.object.featured_image
+                endif
+              -%}
+
+              <li class="luxury-mega-menu__item">
+                <a href="{{ card_url }}" class="luxury-mega-menu__card-link">
+                  <div class="luxury-mega-menu__media-wrapper luxury-mega-menu__media--{{ image_ratio }}">
+                    {%- if card_img != blank -%}
+                      {{
+                        card_img
+                        | image_url: width: 800
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '(min-width: 990px) 20vw, 50vw',
+                          widths: '250, 400, 600, 800',
+                          class: 'luxury-mega-menu__image',
+                          alt: card_title
+                      }}
+                    {%- else -%}
+                      <div class="luxury-mega-menu__placeholder">
+                        {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                  <div class="luxury-mega-menu__info">
+                    <h3 class="luxury-mega-menu__title">{{ card_title | escape }}</h3>
+                  </div>
+                </a>
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
+        </ul>
+      </div>
+    </div>
+  </details>
+</header-menu>

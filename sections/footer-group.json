@@ -1,1 +1,85 @@
-{"name":"t:sections.footer.name","type":"footer","sections":{"footer":{"type":"footer","settings":{"color_scheme":"scheme-1","newsletter_enable":true,"newsletter_heading":"Subscribe to our emails","enable_follow_on_shop":true,"show_social":true,"enable_country_selector":true,"enable_language_selector":true,"payment_enable":true,"show_policy":true,"margin_top":0,"padding_top":36,"padding_bottom":36}}},"order":["footer"]}
+{
+  "name": "Footer",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "brand_contact": {
+          "type": "brand_contact",
+          "settings": {
+            "brand_text": "SEOLÉ",
+            "brand_logo_width": 130,
+            "brand_description": "Premium skincare inspired by elegance, purity, and everyday confidence.",
+            "contact_heading": "Contact Us",
+            "contact_phone": "+1 (800) 123-4567",
+            "contact_email": "contact@seole.com",
+            "contact_address": "",
+            "contact_icon_color": "#D4AF37"
+          }
+        },
+        "menu_quick_links": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick Links",
+            "menu": "main-menu"
+          }
+        },
+        "menu_company": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Company",
+            "menu": "footer"
+          }
+        },
+        "social": {
+          "type": "social",
+          "settings": {
+            "heading": "Social",
+            "show_social_icons": true,
+            "social_instagram_url": "https://instagram.com",
+            "social_facebook_url": "https://facebook.com",
+            "social_tiktok_url": "https://tiktok.com",
+            "social_youtube_url": "https://youtube.com",
+            "social_pinterest_url": "",
+            "social_linkedin_url": "",
+            "social_x_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "brand_contact",
+        "menu_quick_links",
+        "menu_company",
+        "social"
+      ],
+      "settings": {
+        "footer_bg_color": "#0D0D0D",
+        "footer_border_radius": 0,
+        "outer_margin": 0,
+        "padding_vertical": 64,
+        "heading_color": "#FFFFFF",
+        "text_color": "#A3A3A3",
+        "link_hover_color": "#FFFFFF",
+        "enable_copyright": true,
+        "copyright_text": "© [year] SEOLÉ. All rights reserved.",
+        "enable_credit": true,
+        "credit_text": "Designed by SEOLÉ",
+        "payment_enable": false,
+        "wordmark_enable": true,
+        "wordmark_text": "SEOLÉ",
+        "wordmark_enable_gradient": true,
+        "wordmark_gradient_start": "#1E3B2B",
+        "wordmark_gradient_end": "#62B587",
+        "wordmark_gradient_direction": "135deg",
+        "wordmark_solid_color": "#1F1F1F",
+        "wordmark_font_size": 170,
+        "wordmark_font_weight": "800",
+        "wordmark_letter_spacing": 2
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

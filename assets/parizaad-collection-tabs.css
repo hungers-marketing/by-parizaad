@@ -1,0 +1,522 @@
+/* ==========================================================================
+   PARIZAAD COLLECTION TABS WITH PRODUCT CAROUSEL
+   Minimalist, editorial luxury collection tabs and carousel
+   ========================================================================== */
+
+.parizaad-collection-tabs-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.parizaad-tabs__wrapper {
+  max-width: var(--tabs-max-width, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2.4rem;
+  padding-right: 2.4rem;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Top Subtitle
+   -------------------------------------------------------------------------- */
+.parizaad-tabs__header {
+  text-align: center;
+  margin-bottom: 2.2rem;
+}
+
+.parizaad-tabs__subtitle {
+  display: block;
+  font-size: var(--subtitle-size, 1.3rem);
+  font-weight: var(--subtitle-weight, 400);
+  color: var(--subtitle-color, inherit);
+  letter-spacing: 0.12rem;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Collection Category Tabs Bar
+   -------------------------------------------------------------------------- */
+.parizaad-tabs__nav-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 3.8rem;
+  overflow: hidden;
+}
+
+.parizaad-tabs__nav {
+  display: flex;
+  align-items: center;
+  justify-content: var(--tabs-justify, center);
+  gap: var(--tabs-gap, 3.6rem);
+  margin: 0;
+  padding: 0 1rem 0.6rem 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.parizaad-tabs__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.parizaad-tabs__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.8rem 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: var(--tab-font-size, 1.3rem);
+  font-weight: var(--tab-font-weight, 500);
+  letter-spacing: var(--tab-letter-spacing, 0.16rem);
+  text-transform: uppercase;
+  color: var(--tab-text-color, #767676);
+  white-space: nowrap;
+  outline: none;
+  transition: color 0.25s ease;
+  flex-shrink: 0;
+}
+
+.parizaad-tabs__tab:hover {
+  color: var(--tab-active-color, #121212);
+}
+
+.parizaad-tabs__tab.is-active {
+  color: var(--tab-active-color, #121212);
+}
+
+.parizaad-tabs__tab-text {
+  position: relative;
+  z-index: 2;
+}
+
+/* Underline Indicator */
+.parizaad-tabs__tab-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--underline-thickness, 2px);
+  background-color: var(--underline-color, #121212);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.parizaad-tabs__tab.is-active .parizaad-tabs__tab-line {
+  transform: scaleX(1);
+}
+
+.parizaad-tabs__tab:hover:not(.is-active) .parizaad-tabs__tab-line {
+  transform: scaleX(0.5);
+  opacity: 0.5;
+}
+
+.parizaad-tabs__tab:focus-visible {
+  outline: 2px solid var(--tab-active-color, #121212);
+  outline-offset: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Panels Container
+   -------------------------------------------------------------------------- */
+.parizaad-tabs__panels {
+  position: relative;
+  width: 100%;
+}
+
+.parizaad-tabs__panel {
+  display: none;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.parizaad-tabs__panel.is-active {
+  display: block;
+  opacity: 1;
+  animation: parizaadPanelFade 0.35s ease forwards;
+}
+
+@keyframes parizaadPanelFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Product Carousel
+   -------------------------------------------------------------------------- */
+.parizaad-carousel {
+  position: relative;
+  width: 100%;
+}
+
+.parizaad-carousel__track-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.parizaad-carousel__track {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--product-gap, 24px);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.parizaad-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Carousel Items / Card Widths */
+.parizaad-carousel__item {
+  scroll-snap-align: start;
+  flex: 0 0 calc((100% - (var(--items-desktop, 4) - 1) * var(--product-gap, 24px)) / var(--items-desktop, 4));
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 989px) {
+  .parizaad-carousel__item {
+    flex: 0 0 calc((100% - (var(--items-tablet, 2) - 1) * var(--product-gap, 24px)) / var(--items-tablet, 2));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .parizaad-carousel__item {
+    flex: 0 0 calc((100% - (var(--items-mobile, 1.5) - 1) * var(--product-gap, 24px)) / var(--items-mobile, 1.5));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Circular Carousel Navigation Arrows
+   -------------------------------------------------------------------------- */
+.parizaad-carousel__arrow {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: #121212;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 6;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  outline: none;
+  padding: 0;
+}
+
+.parizaad-carousel__arrow--prev {
+  left: -22px;
+}
+
+.parizaad-carousel__arrow--next {
+  right: -22px;
+}
+
+.parizaad-carousel__arrow:hover:not([disabled]) {
+  background-color: #121212;
+  color: #FFFFFF;
+  border-color: #121212;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.parizaad-carousel__arrow[disabled] {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.parizaad-carousel__arrow:focus-visible {
+  outline: 2px solid #121212;
+  outline-offset: 3px;
+}
+
+@media screen and (max-width: 1024px) {
+  .parizaad-carousel__arrow--prev {
+    left: 4px;
+  }
+  .parizaad-carousel__arrow--next {
+    right: 4px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Product Card (Minimal Luxury Aesthetic)
+   -------------------------------------------------------------------------- */
+.parizaad-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+/* Card Media / Image Wrapper */
+.parizaad-card__media-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--image-bg, #F7F7F7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+}
+
+.parizaad-card__media--square {
+  aspect-ratio: 1 / 1;
+}
+
+.parizaad-card__media--portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.parizaad-card__media--landscape {
+  aspect-ratio: 4 / 3;
+}
+
+.parizaad-card__media--adapt {
+  aspect-ratio: auto;
+  min-height: 240px;
+}
+
+.parizaad-card__link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+.parizaad-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: var(--image-fit, contain);
+  object-position: center;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+.parizaad-card__image--secondary {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--image-fit, contain);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.parizaad-card:hover .parizaad-card__image--primary {
+  transform: scale(1.04);
+}
+
+.parizaad-card:hover .parizaad-card__image--secondary {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+/* Card Badges */
+.parizaad-card__badge {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  z-index: 2;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  background-color: #121212;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.parizaad-card__badge--soldout {
+  background-color: rgba(18, 18, 18, 0.7);
+}
+
+/* Placeholder */
+.parizaad-card__placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f2f2f2;
+}
+
+.parizaad-card__placeholder svg {
+  width: 50%;
+  height: 50%;
+  opacity: 0.35;
+}
+
+/* Card Content / Info */
+.parizaad-card__info {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.6rem;
+  text-align: center;
+}
+
+.parizaad-card__vendor {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14rem;
+  opacity: 0.55;
+  margin-bottom: 0.4rem;
+}
+
+.parizaad-card__title {
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.14rem;
+  text-transform: uppercase;
+  margin: 0 0 0.8rem 0;
+  line-height: 1.35;
+  color: inherit;
+}
+
+.parizaad-card__title a {
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.parizaad-card:hover .parizaad-card__title a {
+  opacity: 0.75;
+}
+
+.parizaad-card__price {
+  font-size: 1.3rem;
+  letter-spacing: 0.08rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  line-height: 1.3;
+}
+
+.parizaad-card__price--regular {
+  font-weight: 500;
+}
+
+.parizaad-card__price--compare {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* --------------------------------------------------------------------------
+   Dynamic Bottom Collection Button
+   -------------------------------------------------------------------------- */
+.parizaad-tabs__action {
+  text-align: center;
+  margin-top: 4.8rem;
+}
+
+.parizaad-tabs__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.6rem 4.4rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.18rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  background-color: var(--btn-bg, #121212);
+  color: var(--btn-text, #FFFFFF);
+  border: 1px solid var(--btn-bg, #121212);
+  border-radius: var(--btn-radius, 0px);
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+  min-width: 220px;
+}
+
+.parizaad-tabs__btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.parizaad-tabs__btn:focus-visible {
+  outline: 2px solid #121212;
+  outline-offset: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Adjustments
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .parizaad-tabs__wrapper {
+    padding-left: 1.6rem;
+    padding-right: 1.6rem;
+  }
+
+  .parizaad-tabs__nav {
+    justify-content: flex-start;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    gap: 2.4rem;
+  }
+
+  .parizaad-tabs__action {
+    margin-top: 3.6rem;
+  }
+
+  .parizaad-tabs__btn {
+    width: 100%;
+    max-width: 340px;
+    padding: 1.4rem 2.4rem;
+  }
+
+  .parizaad-carousel__arrow {
+    display: none;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .parizaad-tabs__tab-line,
+  .parizaad-tabs__panel,
+  .parizaad-carousel__track,
+  .parizaad-card__image,
+  .parizaad-card__image--secondary,
+  .parizaad-tabs__btn {
+    transition: none !important;
+    animation: none !important;
+  }
+}

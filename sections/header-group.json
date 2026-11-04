@@ -1,1 +1,89 @@
-{"name":"t:sections.header.name","type":"header","sections":{"announcement-bar":{"type":"announcement-bar","blocks":{"announcement-bar-0":{"type":"announcement","settings":{"text":"Welcome to our store","link":""}}},"block_order":["announcement-bar-0"],"settings":{"auto_rotate":false,"change_slides_speed":5,"color_scheme":"scheme-1","show_line_separator":true,"show_social":false,"enable_country_selector":false,"enable_language_selector":false}},"header":{"type":"header","settings":{"logo_position":"middle-left","mobile_logo_position":"center","menu":"main-menu","menu_type_desktop":"dropdown","sticky_header_type":"on-scroll-up","show_line_separator":true,"color_scheme":"scheme-1","menu_color_scheme":"scheme-1","enable_country_selector":true,"enable_language_selector":true,"margin_bottom":0,"padding_top":20,"padding_bottom":20}}},"order":["announcement-bar","header"]}
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-bar-0": {
+          "type": "announcement",
+          "settings": {
+            "text": "Complimentary Worldwide Shipping on All Orders",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement-bar-0"
+      ],
+      "settings": {
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "color_scheme": "scheme-4",
+        "show_line_separator": false,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
+    },
+    "header": {
+      "type": "header",
+      "blocks": {
+        "mega_menu_shop": {
+          "type": "mega_menu",
+          "settings": {
+            "parent_item": "Shop",
+            "columns_desktop": "5",
+            "image_ratio": "wide",
+            "bg_color": "#FFFFFF",
+            "text_color": "#121212",
+            "card_1_collection": "all-products",
+            "card_1_title": "ALL FEATURED",
+            "card_2_collection": "cleanser",
+            "card_2_title": "CLEANSER",
+            "card_3_collection": "night-cream",
+            "card_3_title": "NIGHT CREAM",
+            "card_4_collection": "serums",
+            "card_4_title": "SERUMS",
+            "card_5_collection": "sunscreen",
+            "card_5_title": "SUNSCREEN"
+          }
+        }
+      },
+      "block_order": [
+        "mega_menu_shop"
+      ],
+      "settings": {
+        "enable_transparent_header": true,
+        "luxury_layout": "luxury-center",
+        "desktop_logo_width": 160,
+        "mobile_logo_width": 110,
+        "transparent_header_text_color": "#FFFFFF",
+        "solid_header_bg_color": "#FFFFFF",
+        "solid_header_text_color": "#121212",
+        "sticky_scroll_threshold": 50,
+        "contact_link_label": "Contact Us",
+        "contact_link_url": "/pages/contact",
+        "navigation_letter_spacing": 1.5,
+        "navigation_font_weight": "500",
+        "logo_position": "middle-left",
+        "mobile_logo_position": "center",
+        "menu": "main-menu",
+        "menu_type_desktop": "dropdown",
+        "sticky_header_type": "always",
+        "show_line_separator": false,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}

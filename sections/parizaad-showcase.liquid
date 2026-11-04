@@ -1,0 +1,894 @@
+{{ 'parizaad-showcase.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'parizaad-showcase.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .parizaad-showcase__wrapper {
+    --showcase-max-width: {{ section.settings.content_max_width }}px;
+    --showcase-column-gap: {{ section.settings.column_gap }}px;
+    --arrow-size: {{ section.settings.arrow_size }}px;
+    --arrow-color: {{ section.settings.arrow_color }};
+    --arrow-bg: {{ section.settings.arrow_bg_color }};
+    --arrow-border: {{ section.settings.arrow_border_color }};
+    --hotspot-size: {{ section.settings.hotspot_size }}px;
+    --hotspot-center-color: {{ section.settings.hotspot_center_color }};
+    --hotspot-ring-color: {{ section.settings.hotspot_ring_color }};
+    --hotspot-hover-scale: {{ section.settings.hotspot_hover_scale | divided_by: 100.0 }};
+    --product-image-fit: {{ section.settings.product_image_fit }};
+    --btn-bg: {{ section.settings.button_bg_color }};
+    --btn-text: {{ section.settings.button_text_color }};
+    --btn-radius: {{ section.settings.button_border_radius }}px;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  # Count slide blocks
+  assign slide_count = 0
+  for block in section.blocks
+    if block.type == 'slide'
+      assign slide_count = slide_count | plus: 1
+    endif
+  endfor
+-%}
+
+<div class="parizaad-showcase-section color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="parizaad-showcase__wrapper">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="parizaad-showcase__header parizaad-showcase__header--{{ section.settings.heading_alignment }}">
+        {%- if section.settings.subheading != blank -%}
+          <span class="parizaad-showcase__subheading">{{ section.settings.subheading | escape }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="parizaad-showcase__heading parizaad-showcase__heading--{{ section.settings.heading_size }}">
+            {{ section.settings.heading | escape }}
+          </h2>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <parizaad-showcase
+      class="parizaad-showcase__carousel"
+      data-infinite-loop="{{ section.settings.enable_infinite_loop }}"
+      data-autoplay="{{ section.settings.enable_autoplay }}"
+      data-autoplay-interval="{{ section.settings.autoplay_interval }}"
+      data-pause-on-hover="{{ section.settings.pause_on_hover }}"
+    >
+      {%- if section.settings.show_arrows and slide_count > 1 -%}
+        <button
+          type="button"
+          class="parizaad-showcase__arrow parizaad-showcase__arrow--prev"
+          aria-label="{{ 'general.slider.previous_slide' | t | default: 'Previous showcase' }}"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="parizaad-showcase__arrow parizaad-showcase__arrow--next"
+          aria-label="{{ 'general.slider.next_slide' | t | default: 'Next showcase' }}"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      {%- endif -%}
+
+      <div class="parizaad-showcase__slides-track">
+        {%- if slide_count > 0 -%}
+          {%- assign current_slide_index = 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'slide' -%}
+              {%- liquid
+                assign slide_id = block.settings.slide_id | default: forloop.index | strip | downcase
+                assign is_first_slide = false
+                if current_slide_index == 0
+                  assign is_first_slide = true
+                endif
+
+                # Check how many hotspots belong to this slide
+                assign slide_hotspots_count = 0
+                assign has_default_hotspot = false
+                for h_block in section.blocks
+                  if h_block.type == 'hotspot'
+                    assign h_slide_id = h_block.settings.slide_id | strip | downcase
+                    if h_slide_id == slide_id or slide_count == 1
+                      assign slide_hotspots_count = slide_hotspots_count | plus: 1
+                      if h_block.settings.is_default
+                        assign has_default_hotspot = true
+                      endif
+                    endif
+                  endif
+                endfor
+              -%}
+
+              <div
+                class="parizaad-showcase__slide{% if is_first_slide %} is-active{% endif %}"
+                data-slide-index="{{ current_slide_index }}"
+                data-slide-id="{{ slide_id }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="parizaad-showcase__grid parizaad-showcase__grid--{{ section.settings.column_proportions }}">
+                  {% comment %} Left Column: Lifestyle Image & Hotspots {% endcomment %}
+                  <div class="parizaad-showcase__media-column">
+                    <div class="parizaad-showcase__media-container parizaad-showcase__media--{{ block.settings.image_aspect_ratio }}">
+                      {%- if block.settings.image != blank -%}
+                        {%- if block.settings.image_mobile != blank -%}
+                          {{
+                            block.settings.image
+                            | image_url: width: 1400
+                            | image_tag:
+                              loading: 'lazy',
+                              sizes: '(min-width: 990px) 55vw, 100vw',
+                              widths: '400, 600, 800, 1000, 1400',
+                              class: 'parizaad-showcase__media-image parizaad-showcase__media-image--desktop parizaad-showcase__media-image--has-mobile',
+                              alt: block.settings.image.alt | default: section.settings.heading
+                          }}
+                          {{
+                            block.settings.image_mobile
+                            | image_url: width: 800
+                            | image_tag:
+                              loading: 'lazy',
+                              sizes: '100vw',
+                              widths: '350, 500, 750, 800',
+                              class: 'parizaad-showcase__media-image parizaad-showcase__media-image--mobile',
+                              alt: block.settings.image_mobile.alt | default: section.settings.heading
+                          }}
+                        {%- else -%}
+                          {{
+                            block.settings.image
+                            | image_url: width: 1400
+                            | image_tag:
+                              loading: 'lazy',
+                              sizes: '(min-width: 990px) 55vw, 100vw',
+                              widths: '400, 600, 800, 1000, 1400',
+                              class: 'parizaad-showcase__media-image',
+                              alt: block.settings.image.alt | default: section.settings.heading
+                          }}
+                        {%- endif -%}
+                      {%- else -%}
+                        <div class="parizaad-showcase__media-placeholder">
+                          {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                        </div>
+                      {%- endif -%}
+
+                      {% comment %} Hotspots Layer {% endcomment %}
+                      <div class="parizaad-showcase__hotspots-layer">
+                        {%- assign product_counter = 0 -%}
+                        {%- for h_block in section.blocks -%}
+                          {%- if h_block.type == 'hotspot' -%}
+                            {%- assign h_slide_id = h_block.settings.slide_id | strip | downcase -%}
+                            {%- if h_slide_id == slide_id or slide_count == 1 -%}
+                              {%- liquid
+                                assign product = h_block.settings.product
+                                assign pos_x = h_block.settings.pos_x | default: 50
+                                assign pos_y = h_block.settings.pos_y | default: 50
+                                assign pos_x_mob = h_block.settings.pos_x_mobile
+                                assign pos_y_mob = h_block.settings.pos_y_mobile
+                                if pos_x_mob == 0
+                                  assign pos_x_mob = pos_x
+                                endif
+                                if pos_y_mob == 0
+                                  assign pos_y_mob = pos_y
+                                endif
+
+                                assign is_active_hotspot = false
+                                if has_default_hotspot and h_block.settings.is_default
+                                  assign is_active_hotspot = true
+                                elsif has_default_hotspot == false and product_counter == 0
+                                  assign is_active_hotspot = true
+                                endif
+                              -%}
+                              <button
+                                type="button"
+                                class="parizaad-hotspot{% if is_active_hotspot %} is-active{% endif %}"
+                                style="--hotspot-x: {{ pos_x }}%; --hotspot-y: {{ pos_y }}%; --hotspot-current-x: {{ pos_x_mob }}%; --hotspot-current-y: {{ pos_y_mob }}%;"
+                                data-hotspot-id="{{ h_block.id }}"
+                                data-product-index="{{ product_counter }}"
+                                data-is-default="{% if h_block.settings.is_default %}true{% else %}false{% endif %}"
+                                aria-label="{{ h_block.settings.label | default: product.title | default: 'View product' }}"
+                                aria-selected="{% if is_active_hotspot %}true{% else %}false{% endif %}"
+                                {{ h_block.shopify_attributes }}
+                              >
+                                {%- if section.settings.enable_pulse -%}
+                                  <span class="parizaad-hotspot__pulse"></span>
+                                {%- endif -%}
+                                <span class="parizaad-hotspot__inner">
+                                  <span class="parizaad-hotspot__dot"></span>
+                                </span>
+                              </button>
+                              {%- assign product_counter = product_counter | plus: 1 -%}
+                            {%- endif -%}
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </div>
+                    </div>
+                  </div>
+
+                  {% comment %} Right Column: Selected Product Panel {% endcomment %}
+                  <div class="parizaad-showcase__product-column">
+                    {%- if slide_hotspots_count > 0 -%}
+                      {%- assign product_counter = 0 -%}
+                      {%- for h_block in section.blocks -%}
+                        {%- if h_block.type == 'hotspot' -%}
+                          {%- assign h_slide_id = h_block.settings.slide_id | strip | downcase -%}
+                          {%- if h_slide_id == slide_id or slide_count == 1 -%}
+                            {%- liquid
+                              assign product = h_block.settings.product
+                              assign is_active_card = false
+                              if has_default_hotspot and h_block.settings.is_default
+                                assign is_active_card = true
+                              elsif has_default_hotspot == false and product_counter == 0
+                                assign is_active_card = true
+                              endif
+                            -%}
+                            <div
+                              class="parizaad-showcase__product-card{% if is_active_card %} is-active{% endif %}"
+                              data-product-index="{{ product_counter }}"
+                              data-hotspot-id="{{ h_block.id }}"
+                              aria-hidden="{% if is_active_card %}false{% else %}true{% endif %}"
+                            >
+                              <div class="parizaad-showcase__product-media parizaad-showcase__product-media--{{ section.settings.product_image_aspect_ratio }}">
+                                {%- if product != blank and product.featured_image != blank -%}
+                                  <a href="{{ product.url }}" class="parizaad-showcase__product-media-link" tabindex="{% if is_active_card %}0{% else %}-1{% endif %}">
+                                    {{
+                                      product.featured_image
+                                      | image_url: width: 700
+                                      | image_tag:
+                                        loading: 'lazy',
+                                        sizes: '(min-width: 990px) 350px, 60vw',
+                                        widths: '250, 350, 500, 700',
+                                        class: 'parizaad-showcase__product-image',
+                                        alt: product.title
+                                    }}
+                                  </a>
+                                {%- else -%}
+                                  <div class="parizaad-showcase__product-placeholder">
+                                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                                  </div>
+                                {%- endif -%}
+                              </div>
+
+                              <div class="parizaad-showcase__product-info">
+                                {%- if section.settings.show_vendor and product.vendor != blank -%}
+                                  <span class="parizaad-showcase__product-vendor">{{ product.vendor }}</span>
+                                {%- endif -%}
+
+                                <h3 class="parizaad-showcase__product-title">
+                                  {%- if product != blank -%}
+                                    <a href="{{ product.url }}" tabindex="{% if is_active_card %}0{% else %}-1{% endif %}">
+                                      {{ product.title | escape }}
+                                    </a>
+                                  {%- else -%}
+                                    Sample Luxury Product
+                                  {%- endif -%}
+                                </h3>
+
+                                <div class="parizaad-showcase__product-price">
+                                  {%- if product != blank -%}
+                                    {%- if product.compare_at_price > product.price and section.settings.show_compare_at_price -%}
+                                      <span class="parizaad-showcase__price--regular">{{ product.price | money }}</span>
+                                      <s class="parizaad-showcase__price--compare">{{ product.compare_at_price | money }}</s>
+                                    {%- else -%}
+                                      <span class="parizaad-showcase__price--regular">{{ product.price | money }}</span>
+                                    {%- endif -%}
+                                  {%- else -%}
+                                    <span class="parizaad-showcase__price--regular">$180.00</span>
+                                  {%- endif -%}
+                                </div>
+
+                                {%- if product != blank and product.available == false -%}
+                                  <span class="parizaad-showcase__badge--soldout">{{ 'products.product.sold_out' | t | default: 'Sold out' }}</span>
+                                {%- endif -%}
+
+                                {%- if section.settings.show_description -%}
+                                  <div class="parizaad-showcase__product-description">
+                                    {%- if product != blank and product.description != blank -%}
+                                      {{ product.description | strip_html | truncatewords: section.settings.description_words_count }}
+                                    {%- else -%}
+                                      Discover refined artisanal craftsmanship designed with timeless silhouettes and understated luxury.
+                                    {%- endif -%}
+                                  </div>
+                                {%- endif -%}
+
+                                <div class="parizaad-showcase__product-action">
+                                  <a
+                                    href="{{ product.url | default: '#' }}"
+                                    class="parizaad-showcase__btn"
+                                    tabindex="{% if is_active_card %}0{% else %}-1{% endif %}"
+                                  >
+                                    {{ section.settings.button_text | default: 'VIEW PRODUCT' }}
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                            {%- assign product_counter = product_counter | plus: 1 -%}
+                          {%- endif -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+
+                      {% comment %} Product Pagination Dots {% endcomment %}
+                      {%- if section.settings.show_product_pagination and slide_hotspots_count > 1 -%}
+                        <div class="parizaad-showcase__pagination" role="tablist" aria-label="Product pagination">
+                          {%- for i in (1..slide_hotspots_count) -%}
+                            {%- assign dot_index = i | minus: 1 -%}
+                            <button
+                              type="button"
+                              role="tab"
+                              class="parizaad-showcase__pagination-dot{% if dot_index == 0 %} is-active{% endif %}"
+                              data-product-index="{{ dot_index }}"
+                              aria-label="Product {{ i }}"
+                              aria-selected="{% if dot_index == 0 %}true{% else %}false{% endif %}"
+                            ></button>
+                          {%- endfor -%}
+                        </div>
+                      {%- endif -%}
+                    {%- else -%}
+                      <div class="parizaad-showcase__product-card is-active" data-product-index="0">
+                        <div class="parizaad-showcase__product-media parizaad-showcase__product-media--{{ section.settings.product_image_aspect_ratio }}">
+                          <div class="parizaad-showcase__product-placeholder">
+                            {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        </div>
+                        <div class="parizaad-showcase__product-info">
+                          <h3 class="parizaad-showcase__product-title">Add a Product Hotspot</h3>
+                          <div class="parizaad-showcase__product-price">
+                            <span class="parizaad-showcase__price--regular">$150.00</span>
+                          </div>
+                          <div class="parizaad-showcase__product-description">
+                            Add product hotspot blocks to link products to this showcase slide.
+                          </div>
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+              {%- assign current_slide_index = current_slide_index | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {% comment %} Fallback when no slide blocks are added yet {% endcomment %}
+          <div class="parizaad-showcase__slide is-active" data-slide-index="0" data-slide-id="look-1">
+            <div class="parizaad-showcase__grid parizaad-showcase__grid--{{ section.settings.column_proportions }}">
+              <div class="parizaad-showcase__media-column">
+                <div class="parizaad-showcase__media-container parizaad-showcase__media--portrait_4_5">
+                  <div class="parizaad-showcase__media-placeholder">
+                    {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                  <div class="parizaad-showcase__hotspots-layer">
+                    <button
+                      type="button"
+                      class="parizaad-hotspot is-active"
+                      style="--hotspot-x: 42%; --hotspot-y: 45%;"
+                      data-product-index="0"
+                      aria-label="View product 1"
+                      aria-selected="true"
+                    >
+                      <span class="parizaad-hotspot__pulse"></span>
+                      <span class="parizaad-hotspot__inner">
+                        <span class="parizaad-hotspot__dot"></span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      class="parizaad-hotspot"
+                      style="--hotspot-x: 62%; --hotspot-y: 65%;"
+                      data-product-index="1"
+                      aria-label="View product 2"
+                      aria-selected="false"
+                    >
+                      <span class="parizaad-hotspot__pulse"></span>
+                      <span class="parizaad-hotspot__inner">
+                        <span class="parizaad-hotspot__dot"></span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="parizaad-showcase__product-column">
+                <div class="parizaad-showcase__product-card is-active" data-product-index="0">
+                  <div class="parizaad-showcase__product-media parizaad-showcase__product-media--square">
+                    <div class="parizaad-showcase__product-placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  </div>
+                  <div class="parizaad-showcase__product-info">
+                    <h3 class="parizaad-showcase__product-title">Sample Luxury Product 1</h3>
+                    <div class="parizaad-showcase__product-price">
+                      <span class="parizaad-showcase__price--regular">$180.00</span>
+                    </div>
+                    <div class="parizaad-showcase__product-description">
+                      Add a slide block and product hotspots in the Theme Editor to customize this interactive experience.
+                    </div>
+                    <div class="parizaad-showcase__product-action">
+                      <a href="#" class="parizaad-showcase__btn">{{ section.settings.button_text | default: 'VIEW PRODUCT' }}</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="parizaad-showcase__product-card" data-product-index="1">
+                  <div class="parizaad-showcase__product-media parizaad-showcase__product-media--square">
+                    <div class="parizaad-showcase__product-placeholder">
+                      {{ 'product-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  </div>
+                  <div class="parizaad-showcase__product-info">
+                    <h3 class="parizaad-showcase__product-title">Sample Luxury Product 2</h3>
+                    <div class="parizaad-showcase__product-price">
+                      <span class="parizaad-showcase__price--regular">$240.00</span>
+                    </div>
+                    <div class="parizaad-showcase__product-description">
+                      Interactive shopping experience allows customers to explore curated products directly on the lifestyle image.
+                    </div>
+                    <div class="parizaad-showcase__product-action">
+                      <a href="#" class="parizaad-showcase__btn">{{ section.settings.button_text | default: 'VIEW PRODUCT' }}</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="parizaad-showcase__pagination" role="tablist">
+                  <button type="button" class="parizaad-showcase__pagination-dot is-active" data-product-index="0" aria-label="Product 1" aria-selected="true"></button>
+                  <button type="button" class="parizaad-showcase__pagination-dot" data-product-index="1" aria-label="Product 2" aria-selected="false"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </parizaad-showcase>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Parizaad Showcase",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "SELECTION OF THE MOMENT"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading (optional)",
+      "default": "Shop The Look"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 1000,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "label": "Content maximum width",
+      "default": 1400
+    },
+    {
+      "type": "select",
+      "id": "column_proportions",
+      "label": "Column proportions",
+      "options": [
+        { "value": "55-45", "label": "55% Image / 45% Product" },
+        { "value": "50-50", "label": "50% Image / 50% Product" },
+        { "value": "60-40", "label": "60% Image / 40% Product" }
+      ],
+      "default": "55-45"
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Column gap",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Showcase Slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow icon color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Arrow background color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Arrow border color",
+      "default": "rgba(0,0,0,0.12)"
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "min": 36,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrow size",
+      "default": 48
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_loop",
+      "label": "Enable infinite slider loop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay interval",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause autoplay on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Hotspots"
+    },
+    {
+      "type": "range",
+      "id": "hotspot_size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Dot size",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "hotspot_center_color",
+      "label": "Dot center color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "hotspot_ring_color",
+      "label": "Dot outer ring color",
+      "default": "rgba(255, 255, 255, 0.45)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_pulse",
+      "label": "Enable pulse animation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "hotspot_hover_scale",
+      "min": 105,
+      "max": 135,
+      "step": 5,
+      "unit": "%",
+      "label": "Hotspot hover scale",
+      "default": 115
+    },
+    {
+      "type": "header",
+      "content": "Product Panel"
+    },
+    {
+      "type": "select",
+      "id": "product_image_aspect_ratio",
+      "label": "Product image aspect ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "product_image_fit",
+      "label": "Product image fit",
+      "options": [
+        { "value": "contain", "label": "Contain (preserve edges)" },
+        { "value": "cover", "label": "Cover" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_at_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show short description",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "description_words_count",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "label": "Maximum description words",
+      "default": 25
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button label",
+      "default": "VIEW PRODUCT"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button corner radius",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_pagination",
+      "label": "Show product pagination dots",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Showcase Slide",
+      "settings": [
+        {
+          "type": "text",
+          "id": "slide_id",
+          "label": "Slide identifier",
+          "default": "look-1",
+          "info": "Unique identifier to link hotspots to this slide (e.g. 'look-1')"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Desktop lifestyle image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile lifestyle image (optional)"
+        },
+        {
+          "type": "select",
+          "id": "image_aspect_ratio",
+          "label": "Image aspect ratio",
+          "options": [
+            { "value": "portrait_4_5", "label": "Portrait (4:5)" },
+            { "value": "square", "label": "Square (1:1)" },
+            { "value": "portrait_3_4", "label": "Portrait (3:4)" },
+            { "value": "adapt", "label": "Adapt to image" }
+          ],
+          "default": "portrait_4_5"
+        }
+      ]
+    },
+    {
+      "type": "hotspot",
+      "name": "Product Hotspot",
+      "settings": [
+        {
+          "type": "text",
+          "id": "slide_id",
+          "label": "Associated slide identifier",
+          "default": "look-1",
+          "info": "Enter the Slide identifier of the slide this hotspot belongs to."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "range",
+          "id": "pos_x",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "label": "Desktop horizontal position (X)",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "pos_y",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "label": "Desktop vertical position (Y)",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "pos_x_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Mobile horizontal position (X)",
+          "default": 0,
+          "info": "Leave at 0 to use desktop X position"
+        },
+        {
+          "type": "range",
+          "id": "pos_y_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Mobile vertical position (Y)",
+          "default": 0,
+          "info": "Leave at 0 to use desktop Y position"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Accessible label",
+          "default": "View product"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_default",
+          "label": "Set as initial active product",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Parizaad Showcase",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "slide_id": "look-1"
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "slide_id": "look-1",
+            "pos_x": 42,
+            "pos_y": 45
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "slide_id": "look-1",
+            "pos_x": 62,
+            "pos_y": 68
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

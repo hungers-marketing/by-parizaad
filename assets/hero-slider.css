@@ -1,0 +1,508 @@
+/* ==========================================================================
+   ADVANCED MULTIMEDIA HERO SLIDER
+   Luxury Jewellery Visual Experience
+   ========================================================================== */
+
+.hero-slider-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: #0b0b0b;
+}
+
+/* Height Options */
+.hero-slider-section--fullscreen {
+  height: 100vh;
+  height: 100svh;
+  min-height: 550px;
+}
+
+.hero-slider-section--large {
+  height: 750px;
+}
+
+.hero-slider-section--medium {
+  height: 620px;
+}
+
+.hero-slider-section--small {
+  height: 500px;
+}
+
+.hero-slider-section--custom {
+  height: var(--hero-desktop-height, 750px);
+}
+
+@media screen and (max-width: 749px) {
+  .hero-slider-section--large {
+    height: 540px;
+  }
+  .hero-slider-section--medium {
+    height: 460px;
+  }
+  .hero-slider-section--small {
+    height: 380px;
+  }
+  .hero-slider-section--custom {
+    height: var(--hero-mobile-height, 500px);
+  }
+  .hero-slider-section--fullscreen {
+    height: 100vh;
+    height: 100svh;
+    min-height: 480px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Slider Web Component & Track
+   -------------------------------------------------------------------------- */
+hero-slider {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: pan-y pinch-zoom;
+}
+
+.hero-slider__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+   Slide Elements & Transition Modes
+   -------------------------------------------------------------------------- */
+.hero-slider__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Fade Transition (Default Luxury Mode) */
+hero-slider[data-transition="fade"] .hero-slider__slide {
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+              visibility 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+hero-slider[data-transition="fade"] .hero-slider__slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* Slide Transition (Horizontal Mode) */
+hero-slider[data-transition="slide"] .hero-slider__slide {
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateX(100%);
+}
+
+hero-slider[data-transition="slide"] .hero-slider__slide.is-active {
+  transform: translateX(0%);
+  pointer-events: auto;
+  z-index: 2;
+}
+
+hero-slider[data-transition="slide"] .hero-slider__slide.is-prev {
+  transform: translateX(-100%);
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slider__slide,
+  hero-slider[data-transition="fade"] .hero-slider__slide,
+  hero-slider[data-transition="slide"] .hero-slider__slide {
+    transition: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Background Media (Images & Videos)
+   -------------------------------------------------------------------------- */
+.hero-slider__media-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.hero-slider__image,
+.hero-slider__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.hero-slider__video {
+  pointer-events: none;
+}
+
+.hero-slider__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Slide Content & Typography
+   -------------------------------------------------------------------------- */
+.hero-slider__content-wrapper {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  box-sizing: border-box;
+  padding: 6rem 2.5rem;
+  /* Top padding accounts for transparent header */
+  padding-top: calc(var(--header-height, 90px) + 3rem);
+}
+
+@media screen and (min-width: 990px) {
+  .hero-slider__content-wrapper {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+/* Content Positioning Grid */
+.hero-slider__content-wrapper--top-left { align-items: flex-start; justify-content: flex-start; }
+.hero-slider__content-wrapper--top-center { align-items: flex-start; justify-content: center; }
+.hero-slider__content-wrapper--top-right { align-items: flex-start; justify-content: flex-end; }
+.hero-slider__content-wrapper--middle-left { align-items: center; justify-content: flex-start; }
+.hero-slider__content-wrapper--middle-center { align-items: center; justify-content: center; }
+.hero-slider__content-wrapper--middle-right { align-items: center; justify-content: flex-end; }
+.hero-slider__content-wrapper--bottom-left { align-items: flex-end; justify-content: flex-start; }
+.hero-slider__content-wrapper--bottom-center { align-items: flex-end; justify-content: center; }
+.hero-slider__content-wrapper--bottom-right { align-items: flex-end; justify-content: flex-end; }
+
+.hero-slider__box {
+  max-width: var(--content-max-width, 900px);
+  width: 100%;
+}
+
+.hero-slider__box--align-left { text-align: left; }
+.hero-slider__box--align-center { text-align: center; margin-left: auto; margin-right: auto; }
+.hero-slider__box--align-right { text-align: right; margin-left: auto; }
+
+@media screen and (max-width: 749px) {
+  .hero-slider__box--mobile-left { text-align: left !important; margin-left: 0 !important; margin-right: 0 !important; }
+  .hero-slider__box--mobile-center { text-align: center !important; margin-left: auto !important; margin-right: auto !important; }
+  .hero-slider__box--mobile-right { text-align: right !important; margin-left: auto !important; margin-right: 0 !important; }
+}
+
+/* Subtitle / Eyebrow */
+.hero-slider__subheading {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.32rem;
+  text-transform: uppercase;
+  margin: 0 0 1.2rem 0;
+  color: var(--slide-text-color, #ffffff);
+  opacity: 0.9;
+}
+
+/* Main Heading */
+.hero-slider__heading {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight, 400);
+  line-height: 1.15;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0 0 1.6rem 0;
+  color: var(--slide-text-color, #ffffff);
+  word-break: break-word;
+}
+
+.hero-slider__heading--h2 { font-size: clamp(2rem, 3.5vw, 3.5rem); }
+.hero-slider__heading--h1 { font-size: clamp(2.4rem, 4.5vw, 4.5rem); }
+.hero-slider__heading--h0 { font-size: clamp(2.8rem, 5.5vw, 5.8rem); }
+.hero-slider__heading--hxl { font-size: clamp(3.2rem, 6.5vw, 7rem); }
+
+/* Description */
+.hero-slider__description {
+  font-size: clamp(1.4rem, 1.8vw, 1.7rem);
+  line-height: 1.65;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  margin: 0 0 2.8rem 0;
+  color: var(--slide-text-color, #ffffff);
+  opacity: 0.88;
+}
+
+.hero-slider__description p {
+  margin: 0;
+}
+
+/* Buttons */
+.hero-slider__buttons {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+.hero-slider__box--align-center .hero-slider__buttons {
+  justify-content: center;
+}
+
+.hero-slider__box--align-right .hero-slider__buttons {
+  justify-content: flex-end;
+}
+
+.hero-slider__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.3rem 3.2rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.18rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--buttons-radius, 0px);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  min-height: 48px;
+}
+
+.hero-slider__btn--primary {
+  background-color: #ffffff;
+  color: #121212;
+  border: 1px solid #ffffff;
+}
+
+.hero-slider__btn--primary:hover {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+.hero-slider__btn--secondary {
+  background-color: #121212;
+  color: #ffffff;
+  border: 1px solid #121212;
+}
+
+.hero-slider__btn--secondary:hover {
+  background-color: transparent;
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.hero-slider__btn--outline {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.hero-slider__btn--outline:hover {
+  background-color: #ffffff;
+  color: #121212;
+  border-color: #ffffff;
+}
+
+.hero-slider__btn--link {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
+}
+
+.hero-slider__btn--link:hover {
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
+   Animations (Fade Up on Slide Activation)
+   -------------------------------------------------------------------------- */
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-slider__slide.is-active .hero-slider__subheading {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.hero-slider__slide.is-active .hero-slider__heading {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+
+.hero-slider__slide.is-active .hero-slider__description {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.hero-slider__slide.is-active .hero-slider__buttons {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slider__slide.is-active .hero-slider__subheading,
+  .hero-slider__slide.is-active .hero-slider__heading,
+  .hero-slider__slide.is-active .hero-slider__description,
+  .hero-slider__slide.is-active .hero-slider__buttons {
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Navigation Arrows
+   -------------------------------------------------------------------------- */
+.hero-slider__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  padding: 0;
+}
+
+.hero-slider__arrow:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: #121212;
+  border-color: #ffffff;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.hero-slider__arrow--prev {
+  left: 2.5rem;
+}
+
+.hero-slider__arrow--next {
+  right: 2.5rem;
+}
+
+.hero-slider__arrow svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+@media screen and (max-width: 749px) {
+  .hero-slider__arrow {
+    display: none; /* Mobile uses intuitive swipe gestures */
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Pagination Controls (Dots & Progress Bars)
+   -------------------------------------------------------------------------- */
+.hero-slider__pagination {
+  position: absolute;
+  bottom: 2.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* Dots Style */
+.hero-slider__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-slider__dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.hero-slider__dot.is-active {
+  width: 28px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+/* Progress Lines Style */
+.hero-slider__pagination--lines {
+  gap: 1rem;
+}
+
+.hero-slider__line {
+  position: relative;
+  width: 48px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.hero-slider__line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background-color: #ffffff;
+  transition: width 0.1s linear;
+}
+
+.hero-slider__line.is-active .hero-slider__line-fill {
+  width: 100%;
+}
+
+/* Numbers / Counter Style */
+.hero-slider__counter {
+  font-size: 1.3rem;
+  letter-spacing: 0.15rem;
+  color: #ffffff;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.4rem 1.4rem;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}

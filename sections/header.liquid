@@ -1,6 +1,8 @@
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'luxury-header.css' | asset_url }}" media="all">
+<script src="{{ 'luxury-header.js' | asset_url }}" defer="defer"></script>
 <link
   rel="stylesheet"
   href="{{ 'component-cart-notification.css' | asset_url }}"
@@ -55,6 +57,12 @@
     padding-right: 2.7rem;
   }
 
+  @media screen and (min-width: 990px) {
+    .header__inline-menu summary.list-menu__item {
+      padding-right: 0;
+    }
+  }
+
   .list-menu__item {
     display: flex;
     align-items: center;
@@ -101,6 +109,16 @@
 </style>
 
 {%- style -%}
+  :root {
+    --header-transparent-text: {{ section.settings.transparent_header_text_color | default: '#ffffff' }};
+    --header-solid-bg: {{ section.settings.solid_header_bg_color | default: '#ffffff' }};
+    --header-solid-text: {{ section.settings.solid_header_text_color | default: '#121212' }};
+    --nav-letter-spacing: {{ section.settings.navigation_letter_spacing | default: 1.5 }}px;
+    --nav-font-weight: {{ section.settings.navigation_font_weight | default: '500' }};
+    --desktop-logo-width: {{ section.settings.desktop_logo_width | default: settings.logo_width | default: 160 }}px;
+    --mobile-logo-width: {{ section.settings.mobile_logo_width | default: 110 }}px;
+  }
+
   .header {
     padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem;
   }
@@ -140,14 +158,70 @@
   if section.settings.sticky_header_type != 'none'
     assign header_tag = 'sticky-header'
   endif
+
+  assign is_transparent_header = false
+  if template.name == 'index' or request.page_type == 'index'
+    if section.settings.enable_transparent_header
+      assign is_transparent_header = true
+    endif
+  endif
+
+  assign header_layout_class = ''
+  if section.settings.luxury_layout == 'luxury-center'
+    assign header_layout_class = ' header--luxury-center'
+  else
+    assign header_layout_class = ' header--' | append: section.settings.logo_position
+  endif
 %}
+
+{%- if is_transparent_header -%}
+  {%- style -%}
+    .shopify-section-group-header-group.announcement-bar-section,
+    .announcement-bar-section,
+    .utility-bar {
+      position: relative !important;
+      z-index: 40 !important;
+    }
+
+    .section-header {
+      position: relative;
+      z-index: 30;
+      margin-bottom: 0 !important;
+    }
+
+    .template-index #MainContent {
+      margin-top: calc(-1 * var(--header-height, 90px));
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) {
+      background: transparent !important;
+      background-color: transparent !important;
+      background-image: none !important;
+      border-bottom-color: transparent !important;
+      box-shadow: none !important;
+    }
+  {%- endstyle -%}
+{%- endif -%}
 
 <{{ header_tag }}
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
+  class="header-wrapper color-{{ section.settings.color_scheme }}{% unless is_transparent_header %} gradient{% endunless %}{% if section.settings.show_line_separator and is_transparent_header == false %} header-wrapper--border-bottom{% endif %}{% if is_transparent_header %} header-wrapper--transparent{% endif %}"
 >
+  {%- if is_transparent_header -%}
+    <script>
+      (function() {
+        var s = document.querySelector('.section-header');
+        if (s) {
+          s.classList.add('section-header--transparent');
+          s.dataset.scrollThreshold = '{{ section.settings.sticky_scroll_threshold | default: 50 }}';
+        }
+      })();
+    </script>
+  {%- endif -%}
   {%- liquid
     assign social_links = false
     if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_tiktok_link != blank or settings.social_tumblr_link != blank or settings.social_snapchat_link != blank
@@ -164,7 +238,7 @@
       assign language_selector = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
+  <header class="header{{ header_layout_class }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
     {%- liquid
       assign render_search_left = false
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank or shop.customer_accounts_enabled
@@ -175,84 +249,72 @@
         render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links
       endif
 
-      if render_search_left
+      if render_search_left and section.settings.luxury_layout != 'luxury-center'
         render 'header-search', input_id: 'Search-In-Modal-1'
       endif
     -%}
 
-    {%- if section.settings.logo_position != 'middle-center' -%}
+    {%- if section.settings.luxury_layout == 'luxury-center' -%}
+      {%- if section.settings.contact_link_label != blank and section.settings.contact_link_url != blank -%}
+        <a href="{{ section.settings.contact_link_url }}" class="header__contact-link link link--text focus-inset">
+          {{ section.settings.contact_link_label | escape }}
+        </a>
+      {%- else -%}
+        <div class="header__contact-placeholder"></div>
+      {%- endif -%}
+
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
       <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-        {%- if settings.logo != blank -%}
-          <div class="header__heading-logo-wrapper">
-            {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-            {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-            {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
-            {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-            {{
-              settings.logo
-              | image_url: width: 600
-              | image_tag:
-                class: 'header__heading-logo motion-reduce',
-                widths: widths,
-                height: logo_height,
-                width: settings.logo_width,
-                alt: logo_alt,
-                sizes: sizes,
-                preload: true
-            }}
-          </div>
-        {%- else -%}
-          <span class="h2">{{ shop.name }}</span>
-        {%- endif -%}
+        {% render 'header-logo', section: section %}
       </a>
       {%- if request.page_type == 'index' -%}
         </h1>
       {%- endif -%}
-    {%- endif -%}
 
-    {%- liquid
-      if section.settings.menu != blank
-        if section.settings.menu_type_desktop == 'dropdown'
-          render 'header-dropdown-menu'
-        elsif section.settings.menu_type_desktop != 'drawer'
-          render 'header-mega-menu'
+      {%- liquid
+        if section.settings.menu != blank
+          if section.settings.menu_type_desktop == 'dropdown'
+            render 'header-dropdown-menu'
+          elsif section.settings.menu_type_desktop != 'drawer'
+            render 'header-mega-menu'
+          endif
         endif
-      endif
-    %}
-
-    {%- if section.settings.logo_position == 'middle-center' -%}
-      {%- if request.page_type == 'index' -%}
-        <h1 class="header__heading">
-      {%- endif -%}
-      <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-        {%- if settings.logo != blank -%}
-          <div class="header__heading-logo-wrapper">
-            {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-            {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-            {% capture sizes %}(min-width: 750px) {{ settings.logo_width }}px, 50vw{% endcapture %}
-            {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-            {{
-              settings.logo
-              | image_url: width: 600
-              | image_tag:
-                class: 'header__heading-logo',
-                widths: widths,
-                height: logo_height,
-                width: settings.logo_width,
-                alt: logo_alt,
-                sizes: sizes,
-                preload: true
-            }}
-          </div>
-        {%- else -%}
-          <span class="h2">{{ shop.name }}</span>
+      -%}
+    {%- else -%}
+      {%- if section.settings.logo_position != 'middle-center' -%}
+        {%- if request.page_type == 'index' -%}
+          <h1 class="header__heading">
         {%- endif -%}
-      </a>
-      {%- if request.page_type == 'index' -%}
-        </h1>
+        <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
+          {% render 'header-logo', section: section %}
+        </a>
+        {%- if request.page_type == 'index' -%}
+          </h1>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- liquid
+        if section.settings.menu != blank
+          if section.settings.menu_type_desktop == 'dropdown'
+            render 'header-dropdown-menu'
+          elsif section.settings.menu_type_desktop != 'drawer'
+            render 'header-mega-menu'
+          endif
+        endif
+      -%}
+
+      {%- if section.settings.logo_position == 'middle-center' -%}
+        {%- if request.page_type == 'index' -%}
+          <h1 class="header__heading">
+        {%- endif -%}
+        <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
+          {% render 'header-logo', section: section %}
+        </a>
+        {%- if request.page_type == 'index' -%}
+          </h1>
+        {%- endif -%}
       {%- endif -%}
     {%- endif -%}
 
@@ -505,6 +567,138 @@
   "max_blocks": 3,
   "settings": [
     {
+      "type": "header",
+      "content": "Luxury Transparent & Sticky Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent_header",
+      "default": true,
+      "label": "Enable transparent header on homepage",
+      "info": "Overlays the hero banner cleanly on initial load at the top of the homepage."
+    },
+    {
+      "type": "select",
+      "id": "luxury_layout",
+      "options": [
+        {
+          "value": "luxury-center",
+          "label": "Luxury Centered"
+        },
+        {
+          "value": "default",
+          "label": "Standard Theme Layout"
+        }
+      ],
+      "default": "luxury-center",
+      "label": "Header Layout Style"
+    },
+    {
+      "type": "image_picker",
+      "id": "transparent_header_logo",
+      "label": "Transparent Header Logo",
+      "info": "Light or white version of your logo shown over the homepage hero."
+    },
+    {
+      "type": "image_picker",
+      "id": "sticky_header_logo",
+      "label": "Sticky Header Logo",
+      "info": "Dark or colored version of your logo shown when hovered or scrolled. Falls back to theme logo if empty."
+    },
+    {
+      "type": "range",
+      "id": "desktop_logo_width",
+      "min": 50,
+      "max": 350,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Logo Width",
+      "default": 160
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_width",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Logo Width",
+      "default": 110
+    },
+    {
+      "type": "color",
+      "id": "transparent_header_text_color",
+      "label": "Transparent State Text & Icon Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "solid_header_bg_color",
+      "label": "Solid & Hover Background Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "solid_header_text_color",
+      "label": "Solid & Hover Text & Icon Color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "sticky_scroll_threshold",
+      "min": 10,
+      "max": 250,
+      "step": 10,
+      "unit": "px",
+      "label": "Scroll Distance to Transition to Solid",
+      "default": 50
+    },
+    {
+      "type": "text",
+      "id": "contact_link_label",
+      "label": "Optional Top-Left Contact Label",
+      "default": "Contact Us"
+    },
+    {
+      "type": "url",
+      "id": "contact_link_url",
+      "label": "Optional Top-Left Contact Link"
+    },
+    {
+      "type": "range",
+      "id": "navigation_letter_spacing",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Navigation Letter Spacing",
+      "default": 1.5
+    },
+    {
+      "type": "select",
+      "id": "navigation_font_weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular (400)"
+        },
+        {
+          "value": "500",
+          "label": "Medium (500)"
+        },
+        {
+          "value": "600",
+          "label": "Semi-Bold (600)"
+        }
+      ],
+      "default": "500",
+      "label": "Navigation Font Weight"
+    },
+    {
+      "type": "header",
+      "content": "Standard Theme Navigation & Layout"
+    },
+    {
       "type": "select",
       "id": "logo_position",
       "options": [
@@ -592,7 +786,7 @@
           "label": "t:sections.header.settings.sticky_header_type.options__4.label"
         }
       ],
-      "default": "on-scroll-up",
+      "default": "always",
       "label": "t:sections.header.settings.sticky_header_type.label"
     },
     {
@@ -681,6 +875,257 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "mega_menu",
+      "name": "Luxury Mega Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "parent_item",
+          "label": "Parent navigation trigger",
+          "info": "Menu item title or handle to trigger this mega menu (e.g. 'Shop' or 'SHOP')",
+          "default": "Shop"
+        },
+        {
+          "type": "select",
+          "id": "columns_desktop",
+          "label": "Desktop columns",
+          "options": [
+            {
+              "value": "2",
+              "label": "2 Columns"
+            },
+            {
+              "value": "3",
+              "label": "3 Columns"
+            },
+            {
+              "value": "4",
+              "label": "4 Columns"
+            },
+            {
+              "value": "5",
+              "label": "5 Columns"
+            },
+            {
+              "value": "6",
+              "label": "6 Columns"
+            }
+          ],
+          "default": "5"
+        },
+        {
+          "type": "select",
+          "id": "image_ratio",
+          "label": "Image aspect ratio",
+          "options": [
+            {
+              "value": "wide",
+              "label": "Rectangular (4:3)"
+            },
+            {
+              "value": "landscape",
+              "label": "Landscape (16:9)"
+            },
+            {
+              "value": "square",
+              "label": "Square (1:1)"
+            },
+            {
+              "value": "portrait",
+              "label": "Portrait (3:4)"
+            }
+          ],
+          "default": "wide"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Dropdown background color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Dropdown text color",
+          "default": "#121212"
+        },
+        {
+          "type": "header",
+          "content": "Card 1"
+        },
+        {
+          "type": "collection",
+          "id": "card_1_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_1_image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "card_1_title",
+          "label": "Custom title"
+        },
+        {
+          "type": "text",
+          "id": "card_1_subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "url",
+          "id": "card_1_url",
+          "label": "Custom URL"
+        },
+        {
+          "type": "header",
+          "content": "Card 2"
+        },
+        {
+          "type": "collection",
+          "id": "card_2_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_2_image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "card_2_title",
+          "label": "Custom title"
+        },
+        {
+          "type": "text",
+          "id": "card_2_subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "url",
+          "id": "card_2_url",
+          "label": "Custom URL"
+        },
+        {
+          "type": "header",
+          "content": "Card 3"
+        },
+        {
+          "type": "collection",
+          "id": "card_3_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_3_image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "card_3_title",
+          "label": "Custom title"
+        },
+        {
+          "type": "text",
+          "id": "card_3_subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "url",
+          "id": "card_3_url",
+          "label": "Custom URL"
+        },
+        {
+          "type": "header",
+          "content": "Card 4"
+        },
+        {
+          "type": "collection",
+          "id": "card_4_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_4_image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "card_4_title",
+          "label": "Custom title"
+        },
+        {
+          "type": "text",
+          "id": "card_4_subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "url",
+          "id": "card_4_url",
+          "label": "Custom URL"
+        },
+        {
+          "type": "header",
+          "content": "Card 5"
+        },
+        {
+          "type": "collection",
+          "id": "card_5_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_5_image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "card_5_title",
+          "label": "Custom title"
+        },
+        {
+          "type": "text",
+          "id": "card_5_subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "url",
+          "id": "card_5_url",
+          "label": "Custom URL"
+        },
+        {
+          "type": "header",
+          "content": "Card 6"
+        },
+        {
+          "type": "collection",
+          "id": "card_6_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_6_image",
+          "label": "Custom image"
+        },
+        {
+          "type": "text",
+          "id": "card_6_title",
+          "label": "Custom title"
+        },
+        {
+          "type": "text",
+          "id": "card_6_subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "url",
+          "id": "card_6_url",
+          "label": "Custom URL"
+        }
+      ]
     }
   ]
 }

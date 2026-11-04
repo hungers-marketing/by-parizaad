@@ -1,0 +1,707 @@
+{% comment %} Parizaad Collection Tabs Component {% endcomment %}
+{{ 'parizaad-collection-tabs.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'parizaad-collection-tabs.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} {
+    {% if section.settings.section_bg_color != blank %}
+      background-color: {{ section.settings.section_bg_color }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .parizaad-tabs__wrapper {
+    --tabs-max-width: {{ section.settings.content_max_width }}px;
+    --tabs-justify: {{ section.settings.tab_alignment }};
+    --subtitle-size: {{ section.settings.subtitle_size }}rem;
+    --subtitle-weight: {{ section.settings.subtitle_weight }};
+    {% if section.settings.subtitle_color != blank %}
+      --subtitle-color: {{ section.settings.subtitle_color }};
+    {% endif %}
+    --tab-font-size: {{ section.settings.tab_font_size }}rem;
+    --tab-font-weight: {{ section.settings.tab_font_weight }};
+    --tab-letter-spacing: {{ section.settings.tab_letter_spacing }}px;
+    --tab-gap: {{ section.settings.tab_gap }}px;
+    --tab-text-color: {{ section.settings.tab_text_color }};
+    --tab-active-color: {{ section.settings.tab_active_color }};
+    --underline-thickness: {{ section.settings.underline_thickness }}px;
+    --underline-color: {{ section.settings.underline_color }};
+    --items-desktop: {{ section.settings.columns_desktop }};
+    --items-tablet: {{ section.settings.columns_tablet }};
+    --items-mobile: {{ section.settings.columns_mobile }};
+    --product-gap: {{ section.settings.product_gap }}px;
+    --image-fit: {{ section.settings.image_fit }};
+    --image-bg: {{ section.settings.image_bg_color }};
+    --btn-bg: {{ section.settings.button_bg_color }};
+    --btn-text: {{ section.settings.button_text_color }};
+    --btn-radius: {{ section.settings.button_border_radius }}px;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign block_count = section.blocks.size
+  assign initial_button_label = ''
+  assign initial_button_url = '#'
+
+  if block_count > 0
+    assign first_block = section.blocks.first
+    assign first_col = first_block.settings.collection
+    assign first_title = first_block.settings.tab_title | default: first_col.title | default: 'Products'
+    assign default_prefix = section.settings.button_prefix | default: 'SEE ALL OUR'
+    assign initial_button_label = first_block.settings.button_label | default: default_prefix | append: ' ' | append: first_title
+    assign initial_button_url = first_block.settings.button_url | default: first_col.url | default: '#'
+  else
+    assign initial_button_label = section.settings.button_prefix | default: 'SEE ALL OUR' | append: ' ICONS'
+  endif
+-%}
+
+<div class="parizaad-collection-tabs-section color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="parizaad-tabs__wrapper">
+    <parizaad-collection-tabs
+      class="parizaad-tabs"
+      data-infinite-loop="{{ section.settings.enable_infinite_loop }}"
+    >
+      {% comment %} Top Subtitle {% endcomment %}
+      {%- if section.settings.subtitle != blank -%}
+        <div class="parizaad-tabs__header">
+          <span class="parizaad-tabs__subtitle">{{ section.settings.subtitle | escape }}</span>
+        </div>
+      {%- endif -%}
+
+      {% comment %} Collection Category Tabs Bar {% endcomment %}
+      <div class="parizaad-tabs__nav-wrapper">
+        <div class="parizaad-tabs__nav" role="tablist" aria-label="Collections">
+          {%- if block_count > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign collection = block.settings.collection
+                assign tab_title = block.settings.tab_title | default: collection.title | default: 'Collection'
+                assign is_active = false
+                if forloop.first
+                  assign is_active = true
+                endif
+              -%}
+              <button
+                type="button"
+                role="tab"
+                id="Tab-{{ section.id }}-{{ block.id }}"
+                class="parizaad-tabs__tab{% if is_active %} is-active{% endif %}"
+                data-block-id="{{ block.id }}"
+                data-index="{{ forloop.index0 }}"
+                aria-selected="{% if is_active %}true{% else %}false{% endif %}"
+                aria-controls="Panel-{{ section.id }}-{{ block.id }}"
+                tabindex="{% if is_active %}0{% else %}-1{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <span class="parizaad-tabs__tab-text">{{ tab_title | escape }}</span>
+                <span class="parizaad-tabs__tab-line"></span>
+              </button>
+            {%- endfor -%}
+          {%- else -%}
+            {% comment %} Sample Fallback Tabs {% endcomment %}
+            <button type="button" role="tab" class="parizaad-tabs__tab is-active" aria-selected="true" data-index="0">
+              <span class="parizaad-tabs__tab-text">RINGS</span>
+              <span class="parizaad-tabs__tab-line"></span>
+            </button>
+            <button type="button" role="tab" class="parizaad-tabs__tab" aria-selected="false" data-index="1">
+              <span class="parizaad-tabs__tab-text">BRACELETS</span>
+              <span class="parizaad-tabs__tab-line"></span>
+            </button>
+            <button type="button" role="tab" class="parizaad-tabs__tab" aria-selected="false" data-index="2">
+              <span class="parizaad-tabs__tab-text">EARRINGS</span>
+              <span class="parizaad-tabs__tab-line"></span>
+            </button>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {% comment %} Tab Panels & Carousels {% endcomment %}
+      <div class="parizaad-tabs__panels">
+        {%- if block_count > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign collection = block.settings.collection
+              assign limit = block.settings.products_to_show | default: 8
+              assign is_active = false
+              if forloop.first
+                assign is_active = true
+              endif
+
+              assign btn_url = block.settings.button_url | default: collection.url | default: '#'
+              assign tab_title = block.settings.tab_title | default: collection.title | default: 'Products'
+              assign default_btn_label = section.settings.button_prefix | default: 'SEE ALL OUR' | append: ' ' | append: tab_title
+              assign btn_label = block.settings.button_label | default: default_btn_label
+            -%}
+
+            <div
+              id="Panel-{{ section.id }}-{{ block.id }}"
+              class="parizaad-tabs__panel{% if is_active %} is-active{% endif %}"
+              role="tabpanel"
+              aria-labelledby="Tab-{{ section.id }}-{{ block.id }}"
+              data-block-id="{{ block.id }}"
+              data-index="{{ forloop.index0 }}"
+              data-button-label="{{ btn_label | escape }}"
+              data-button-url="{{ btn_url }}"
+              {% unless is_active %}hidden{% endunless %}
+            >
+              <div class="parizaad-carousel">
+                {%- if section.settings.show_arrows -%}
+                  <button type="button" class="parizaad-carousel__arrow parizaad-carousel__arrow--prev" aria-label="Previous products" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  </button>
+                  <button type="button" class="parizaad-carousel__arrow parizaad-carousel__arrow--next" aria-label="Next products">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </button>
+                {%- endif -%}
+
+                <div class="parizaad-carousel__track-container">
+                  <ul class="parizaad-carousel__track" role="list">
+                    {%- if collection != blank and collection.products.size > 0 -%}
+                      {%- for product in collection.products limit: limit -%}
+                        <li class="parizaad-carousel__item">
+                          <div class="parizaad-card">
+                            <div class="parizaad-card__media-wrapper parizaad-card__media--{{ section.settings.image_aspect_ratio }}">
+                              <a href="{{ product.url }}" class="parizaad-card__link">
+                                {%- if product.featured_image != blank -%}
+                                  {{
+                                    product.featured_image
+                                    | image_url: width: 800
+                                    | image_tag:
+                                      loading: 'lazy',
+                                      sizes: '(min-width: 990px) 25vw, 50vw',
+                                      widths: '300, 450, 600, 800',
+                                      class: 'parizaad-card__image parizaad-card__image--primary',
+                                      alt: product.title
+                                  }}
+                                  {%- if section.settings.show_secondary_image and product.images[1] != blank -%}
+                                    {{
+                                      product.images[1]
+                                      | image_url: width: 800
+                                      | image_tag:
+                                        loading: 'lazy',
+                                        sizes: '(min-width: 990px) 25vw, 50vw',
+                                        widths: '300, 450, 600, 800',
+                                        class: 'parizaad-card__image parizaad-card__image--secondary',
+                                        alt: product.title
+                                    }}
+                                  {%- endif -%}
+                                {%- else -%}
+                                  <div class="parizaad-card__placeholder">
+                                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                                  </div>
+                                {%- endif -%}
+                              </a>
+
+                              {%- if product.compare_at_price > product.price and section.settings.show_compare_at_price -%}
+                                <span class="parizaad-card__badge">{{ 'products.product.on_sale' | t | default: 'Sale' }}</span>
+                              {%- elsif product.available == false -%}
+                                <span class="parizaad-card__badge parizaad-card__badge--soldout">{{ 'products.product.sold_out' | t | default: 'Sold out' }}</span>
+                              {%- endif -%}
+                            </div>
+
+                            <div class="parizaad-card__info">
+                              {%- if section.settings.show_vendor and product.vendor != blank -%}
+                                <span class="parizaad-card__vendor">{{ product.vendor }}</span>
+                              {%- endif -%}
+
+                              <h3 class="parizaad-card__title">
+                                <a href="{{ product.url }}">{{ product.title | escape }}</a>
+                              </h3>
+
+                              <div class="parizaad-card__price">
+                                {%- if product.compare_at_price > product.price and section.settings.show_compare_at_price -%}
+                                  <span class="parizaad-card__price--regular">{{ product.price | money }}</span>
+                                  <s class="parizaad-card__price--compare">{{ product.compare_at_price | money }}</s>
+                                {%- else -%}
+                                  <span class="parizaad-card__price--regular">{{ product.price | money }}</span>
+                                {%- endif -%}
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      {%- endfor -%}
+                    {%- else -%}
+                      {% comment %} Placeholders for unpopulated collection {% endcomment %}
+                      {%- for i in (1..4) -%}
+                        <li class="parizaad-carousel__item">
+                          <div class="parizaad-card">
+                            <div class="parizaad-card__media-wrapper parizaad-card__media--{{ section.settings.image_aspect_ratio }}">
+                              <div class="parizaad-card__placeholder">
+                                {%- assign svg_name = 'product-' | append: i -%}
+                                {{ svg_name | placeholder_svg_tag: 'placeholder-svg' }}
+                              </div>
+                            </div>
+                            <div class="parizaad-card__info">
+                              <h3 class="parizaad-card__title">
+                                <a href="#">Sample Luxury Product {{ i }}</a>
+                              </h3>
+                              <div class="parizaad-card__price">
+                                <span class="parizaad-card__price--regular">$180.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          {% comment %} Fallback Panel {% endcomment %}
+          <div class="parizaad-tabs__panel is-active" data-index="0" data-button-label="SEE ALL OUR RINGS" data-button-url="#">
+            <div class="parizaad-carousel">
+              {%- if section.settings.show_arrows -%}
+                <button type="button" class="parizaad-carousel__arrow parizaad-carousel__arrow--prev" aria-label="Previous products" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button type="button" class="parizaad-carousel__arrow parizaad-carousel__arrow--next" aria-label="Next products">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              {%- endif -%}
+
+              <div class="parizaad-carousel__track-container">
+                <ul class="parizaad-carousel__track" role="list">
+                  {%- for i in (1..4) -%}
+                    <li class="parizaad-carousel__item">
+                      <div class="parizaad-card">
+                        <div class="parizaad-card__media-wrapper parizaad-card__media--square">
+                          <div class="parizaad-card__placeholder">
+                            {%- assign svg_name = 'product-' | append: i -%}
+                            {{ svg_name | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        </div>
+                        <div class="parizaad-card__info">
+                          <h3 class="parizaad-card__title"><a href="#">Luxury Sample Product {{ i }}</a></h3>
+                          <div class="parizaad-card__price"><span class="parizaad-card__price--regular">$180.00</span></div>
+                        </div>
+                      </div>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {% comment %} Dynamic Bottom Collection Button {% endcomment %}
+      {%- if section.settings.show_button -%}
+        <div class="parizaad-tabs__action">
+          <a
+            id="ParizaadTabsBtn-{{ section.id }}"
+            href="{{ initial_button_url }}"
+            class="parizaad-tabs__btn"
+          >
+            {{ initial_button_label | escape }}
+          </a>
+        </div>
+      {%- endif -%}
+    </parizaad-collection-tabs>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Parizaad Collection Tabs",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Discover our icons"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "min": 1.1,
+      "max": 2.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Subtitle font size",
+      "default": 1.3
+    },
+    {
+      "type": "select",
+      "id": "subtitle_weight",
+      "label": "Subtitle font weight",
+      "options": [
+        { "value": "400", "label": "Normal (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle color"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Custom section background (optional)"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 1000,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "label": "Content maximum width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Collection Tabs"
+    },
+    {
+      "type": "select",
+      "id": "tab_alignment",
+      "label": "Tab alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size",
+      "min": 1.1,
+      "max": 2.0,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Tab font size",
+      "default": 1.3
+    },
+    {
+      "type": "select",
+      "id": "tab_font_weight",
+      "label": "Tab font weight",
+      "options": [
+        { "value": "400", "label": "Normal (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "tab_letter_spacing",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Tab letter spacing",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "tab_gap",
+      "min": 16,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "label": "Space between tabs",
+      "default": 36
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Inactive tab text color",
+      "default": "#767676"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active tab text color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "underline_thickness",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Underline thickness",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "underline_color",
+      "label": "Underline color",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Product Carousel"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Visible products desktop",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "Visible products tablet",
+      "options": [
+        { "value": "2", "label": "2 Products" },
+        { "value": "3", "label": "3 Products" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Visible products mobile",
+      "options": [
+        { "value": "1", "label": "1 Product" },
+        { "value": "1.5", "label": "1.5 Products" },
+        { "value": "2", "label": "2 Products" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "range",
+      "id": "product_gap",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Product card gap",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Product image aspect ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "adapt", "label": "Adapt to image" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Product image fit",
+      "options": [
+        { "value": "contain", "label": "Contain (preserve edges)" },
+        { "value": "cover", "label": "Cover" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "color",
+      "id": "image_bg_color",
+      "label": "Product image background",
+      "default": "#F7F7F7"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_at_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_loop",
+      "label": "Enable infinite carousel loop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Collection Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show bottom collection button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_prefix",
+      "label": "Default button label prefix",
+      "default": "SEE ALL OUR"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button corner radius",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_tab",
+      "name": "Collection Tab",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "tab_title",
+          "label": "Tab title override",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label override",
+          "info": "e.g. 'SEE ALL RINGS'. Leave blank for default."
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL override"
+        },
+        {
+          "type": "range",
+          "id": "products_to_show",
+          "min": 4,
+          "max": 16,
+          "step": 2,
+          "label": "Maximum products to show",
+          "default": 8
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Parizaad Collection Tabs",
+      "blocks": [
+        {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "all-products",
+            "tab_title": "FEATURED"
+          }
+        },
+        {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "cleanser",
+            "tab_title": "CLEANSER"
+          }
+        },
+        {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "night-cream",
+            "tab_title": "NIGHT CREAM"
+          }
+        },
+        {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "serums",
+            "tab_title": "SERUMS"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

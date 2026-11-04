@@ -1,0 +1,69 @@
+{% comment %}
+  Renders the header logo with dual-logo switching support for transparent & sticky states.
+  Accepts:
+  - section: The section object containing settings
+{% endcomment %}
+
+{%- liquid
+  assign is_transparent_header = false
+  if template.name == 'index' or request.page_type == 'index'
+    if section.settings.enable_transparent_header
+      assign is_transparent_header = true
+    endif
+  endif
+
+  assign desktop_width = section.settings.desktop_logo_width | default: settings.logo_width | default: 160
+  assign mobile_width = section.settings.mobile_logo_width | default: 110
+  assign widths = '100, 150, 200, 250, 300, 350, 400, 500, 600'
+  capture sizes
+    echo '(max-width: 989px) ' | append: mobile_width | append: 'px, ' | append: desktop_width | append: 'px'
+  endcapture
+
+  assign transparent_logo = section.settings.transparent_header_logo
+  assign solid_logo = section.settings.sticky_header_logo | default: settings.logo
+
+  assign has_dual_logos = false
+  if is_transparent_header and transparent_logo != blank and solid_logo != blank
+    assign has_dual_logos = true
+  endif
+-%}
+
+<div class="header__heading-logo-wrapper{% if has_dual_logos %} header__heading-logo-wrapper--dual{% endif %}" style="--desktop-logo-width: {{ desktop_width }}px; --mobile-logo-width: {{ mobile_width }}px;">
+  {%- if is_transparent_header and transparent_logo != blank -%}
+    {%- assign trans_alt = transparent_logo.alt | default: shop.name | escape -%}
+    {%- assign trans_height = desktop_width | divided_by: transparent_logo.aspect_ratio | round -%}
+    {{
+      transparent_logo
+      | image_url: width: 600
+      | image_tag:
+        class: 'header__heading-logo header__heading-logo--transparent motion-reduce',
+        widths: widths,
+        height: trans_height,
+        width: desktop_width,
+        alt: trans_alt,
+        sizes: sizes,
+        preload: true
+    }}
+  {%- endif -%}
+
+  {%- if solid_logo != blank -%}
+    {%- assign solid_alt = solid_logo.alt | default: shop.name | escape -%}
+    {%- assign solid_height = desktop_width | divided_by: solid_logo.aspect_ratio | round -%}
+    {{
+      solid_logo
+      | image_url: width: 600
+      | image_tag:
+        class: 'header__heading-logo header__heading-logo--solid motion-reduce',
+        widths: widths,
+        height: solid_height,
+        width: desktop_width,
+        alt: solid_alt,
+        sizes: sizes,
+        preload: true
+    }}
+  {%- elsif is_transparent_header and transparent_logo != blank -%}
+    {% comment %}Transparent logo already rendered above{% endcomment %}
+  {%- else -%}
+    <span class="h2">{{ shop.name }}</span>
+  {%- endif -%}
+</div>

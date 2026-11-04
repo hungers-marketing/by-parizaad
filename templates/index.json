@@ -3,40 +3,98 @@
     "image_banner": {
       "type": "image-banner",
       "blocks": {
-        "heading": {
-          "type": "heading",
+        "slide_1": {
+          "type": "image_slide",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "image_position": "center center",
+            "overlay_color": "#000000",
+            "overlay_opacity": 35,
+            "subheading": "FRENCH KISS",
+            "heading": "KEEP PARIS IN YOUR HEART",
+            "heading_size": "h0",
+            "description": "<p>Discover handcrafted creations celebrating timeless elegance and Parisian savoir-faire.</p>",
+            "desktop_content_position": "middle-center",
+            "desktop_content_alignment": "center",
+            "mobile_content_alignment": "center",
+            "text_color": "#FFFFFF",
+            "button_label_1": "Discover the Collection",
+            "button_link_1": "shopify://collections/all",
+            "button_style_1": "outline",
+            "button_label_2": "Explore High Jewellery",
+            "button_link_2": "shopify://collections/all",
+            "button_style_2": "link",
+            "slide_duration_override": 6
           }
         },
-        "button": {
-          "type": "buttons",
+        "slide_2": {
+          "type": "image_slide",
           "settings": {
-            "button_label_1": "Shop all",
+            "image_position": "center center",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30,
+            "subheading": "TIMELESS BRILLIANCE",
+            "heading": "THE ART OF RADIANCE",
+            "heading_size": "h0",
+            "description": "<p>Each piece is meticulously sculpted to capture the light and celebrate unforgettable moments.</p>",
+            "desktop_content_position": "middle-center",
+            "desktop_content_alignment": "center",
+            "mobile_content_alignment": "center",
+            "text_color": "#FFFFFF",
+            "button_label_1": "Shop New Arrivals",
             "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
+            "button_style_1": "primary",
+            "button_label_2": "Book a Consultation",
+            "button_link_2": "/pages/contact",
+            "button_style_2": "outline",
+            "slide_duration_override": 5
+          }
+        },
+        "slide_3": {
+          "type": "video_slide",
+          "settings": {
+            "overlay_color": "#000000",
+            "overlay_opacity": 35,
+            "muted": true,
+            "loop": true,
+            "show_controls": false,
+            "subheading": "EXCLUSIVE ATELIER",
+            "heading": "MASTERY IN EVERY DETAIL",
+            "heading_size": "h0",
+            "description": "<p>Experience our master artisans at work, transforming precious metals into wearable poetry.</p>",
+            "desktop_content_position": "middle-center",
+            "desktop_content_alignment": "center",
+            "mobile_content_alignment": "center",
+            "text_color": "#FFFFFF",
+            "button_label_1": "View Atelier Film",
+            "button_link_1": "shopify://collections/all",
+            "button_style_1": "outline",
             "button_label_2": "",
             "button_link_2": "",
-            "button_style_secondary_2": false
+            "button_style_2": "link",
+            "slide_duration_override": 0
           }
         }
       },
       "block_order": [
-        "heading",
-        "button"
+        "slide_1",
+        "slide_2",
+        "slide_3"
       ],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "hero_height": "fullscreen",
+        "custom_desktop_height": 750,
+        "custom_mobile_height": 500,
+        "content_max_width": 900,
+        "enable_autoplay": true,
+        "autoplay_duration": 5,
+        "video_duration_mode": "video_end",
+        "transition_effect": "fade",
+        "pause_on_hover": true,
+        "infinite_loop": true,
+        "show_arrows": true,
+        "show_pagination": true,
+        "pagination_style": "dots",
+        "color_scheme": "scheme-3"
       }
     },
     "featured_collection": {

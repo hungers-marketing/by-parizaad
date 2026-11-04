@@ -1,0 +1,417 @@
+/* ==========================================================================
+   SEOLÉ LUXURY FOOTER STYLESHEET
+   Modern Luxury Skincare Aesthetic
+   ========================================================================== */
+
+.luxury-footer-wrapper {
+  margin: 0 !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 749px) {
+  .luxury-footer-wrapper {
+    margin: 0 !important;
+  }
+}
+
+.luxury-footer {
+  background-color: var(--footer-bg, #0d0d0d);
+  border-radius: 0 !important;
+  color: var(--footer-text-color, #a3a3a3);
+  padding-top: var(--footer-padding-top, 64px);
+  padding-bottom: 0 !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none !important;
+  border: none !important;
+  font-family: var(--font-body-family);
+}
+
+.luxury-footer__container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  max-width: var(--page-width, 1200px);
+}
+
+@media screen and (min-width: 750px) {
+  .luxury-footer__container {
+    padding-left: 3.5rem;
+    padding-right: 3.5rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .luxury-footer__container {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4-Column Desktop Grid
+   -------------------------------------------------------------------------- */
+.luxury-footer__grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  column-gap: 4.8rem;
+  row-gap: 3.6rem;
+}
+
+@media screen and (max-width: 989px) {
+  .luxury-footer__grid {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 3.6rem;
+    row-gap: 4rem;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .luxury-footer__grid {
+    grid-template-columns: 1fr;
+    row-gap: 3.6rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Column 1: Brand Info & Contact Us
+   -------------------------------------------------------------------------- */
+.luxury-footer__col--brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.luxury-footer__brand-header {
+  margin-bottom: 1.6rem;
+}
+
+.luxury-footer__logo-link {
+  display: inline-block;
+  line-height: 0;
+  text-decoration: none;
+}
+
+.luxury-footer__logo {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.luxury-footer__brand-title {
+  color: var(--footer-heading-color, #ffffff);
+  font-family: var(--font-heading-family);
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.16rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.luxury-footer__description {
+  color: var(--footer-text-color, #a3a3a3);
+  font-size: 1.35rem;
+  line-height: 1.65;
+  letter-spacing: 0.02rem;
+  margin: 0 0 2.4rem;
+  max-width: 380px;
+}
+
+/* Contact Us sub-section */
+.luxury-footer__contact {
+  margin-top: auto;
+}
+
+.luxury-footer__heading--contact {
+  margin-bottom: 1.4rem;
+}
+
+.luxury-footer__contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.luxury-footer__contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 1.35rem;
+  letter-spacing: 0.03rem;
+}
+
+.luxury-footer__contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  color: var(--footer-accent-color, #d4af37);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.luxury-footer__contact-link {
+  color: var(--footer-text-color, #a3a3a3);
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  word-break: break-word;
+}
+
+.luxury-footer__contact-link:hover {
+  color: var(--footer-link-hover-color, #ffffff);
+  transform: translateX(2px);
+}
+
+.luxury-footer__contact-text {
+  color: var(--footer-text-color, #a3a3a3);
+}
+
+/* --------------------------------------------------------------------------
+   Headings & Navigation Menus
+   -------------------------------------------------------------------------- */
+.luxury-footer__heading {
+  color: var(--footer-heading-color, #ffffff);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.08rem;
+  text-transform: capitalize;
+  margin: 0 0 2rem;
+  line-height: 1.3;
+}
+
+.luxury-footer__menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.luxury-footer__menu-item {
+  margin: 0;
+}
+
+.luxury-footer__menu-link {
+  color: var(--footer-text-color, #a3a3a3);
+  text-decoration: none;
+  font-size: 1.4rem;
+  letter-spacing: 0.03rem;
+  display: inline-block;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-footer__menu-link:hover {
+  color: var(--footer-link-hover-color, #ffffff);
+  transform: translateX(3px);
+}
+
+/* --------------------------------------------------------------------------
+   Column 4: Social Links
+   -------------------------------------------------------------------------- */
+.luxury-footer__social-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.luxury-footer__social-item {
+  margin: 0;
+}
+
+.luxury-footer__social-link {
+  color: var(--footer-text-color, #a3a3a3);
+  text-decoration: none;
+  font-size: 1.4rem;
+  letter-spacing: 0.03rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.luxury-footer__social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  color: currentColor;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.luxury-footer__social-link:hover {
+  color: var(--footer-link-hover-color, #ffffff);
+  transform: translateX(3px);
+}
+
+.luxury-footer__social-link:hover .luxury-footer__social-icon {
+  transform: scale(1.1);
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Information Row (Copyright & Credit)
+   -------------------------------------------------------------------------- */
+.luxury-footer__bottom-row {
+  margin-top: 4.4rem;
+  padding-top: 2.2rem;
+  padding-bottom: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.luxury-footer__copyright {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.luxury-footer__copyright-text {
+  color: inherit;
+  letter-spacing: 0.03rem;
+}
+
+.luxury-footer__credit {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.luxury-footer__credit-link,
+.luxury-footer__credit-text {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  letter-spacing: 0.03rem;
+}
+
+.luxury-footer__credit-link:hover {
+  color: #ffffff;
+}
+
+.luxury-footer__payments {
+  display: flex;
+  align-items: center;
+}
+
+.luxury-footer__payments .list-payment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.luxury-footer__payments .list-payment__item {
+  padding: 0;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.luxury-footer__payments .list-payment__item:hover {
+  opacity: 1;
+}
+
+@media screen and (max-width: 749px) {
+  .luxury-footer__bottom-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.2rem;
+    margin-top: 3.2rem;
+    padding-top: 1.8rem;
+  }
+
+  .luxury-footer__copyright,
+  .luxury-footer__credit {
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   GIANT BRAND WORDMARK (Tight Spacing & Safe Glyph Metrics)
+   -------------------------------------------------------------------------- */
+.luxury-footer__wordmark-wrap {
+  width: 100%;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  text-align: center;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+  line-height: 0;
+}
+
+.luxury-footer__wordmark {
+  display: block;
+  font-family: var(--font-heading-family);
+  font-size: clamp(3.2rem, 15vw, var(--wordmark-font-size, 170px));
+  font-weight: var(--wordmark-font-weight, 800);
+  letter-spacing: var(--wordmark-letter-spacing, 2px);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 0.95;
+  padding-top: 0.08em;
+  padding-bottom: 0.02em;
+  opacity: var(--wordmark-opacity, 1);
+  white-space: nowrap;
+  max-width: 100%;
+  color: var(--wordmark-solid-color, #1f1f1f);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* Gradient Mode */
+.luxury-footer__wordmark--gradient {
+  background: linear-gradient(
+    var(--wordmark-gradient-direction, 135deg),
+    var(--wordmark-gradient-start, #1e3b2b) 0%,
+    var(--wordmark-gradient-end, #62b587) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+@media screen and (max-width: 749px) {
+  .luxury-footer__wordmark-wrap {
+    margin-top: 0 !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .luxury-footer__wordmark {
+    font-size: clamp(2.8rem, 13vw, 80px);
+    letter-spacing: 0.5px;
+    line-height: 0.95;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   App Blocks Support
+   -------------------------------------------------------------------------- */
+.luxury-footer__app-block {
+  margin-top: 2.4rem;
+}

@@ -1,0 +1,726 @@
+/* ==========================================================================
+   LUXURY TRANSPARENT & STICKY HEADER
+   Jewellery Luxury E-Commerce Experience
+   ========================================================================== */
+
+:root {
+  --header-transparent-text: #ffffff;
+  --header-solid-bg: #ffffff;
+  --header-solid-text: #121212;
+  --header-transition-speed: 0.3s;
+  --announcement-bar-height: 0px;
+}
+
+/* Announcement Bar Layering & Stacking Context */
+.shopify-section-group-header-group.announcement-bar-section,
+.announcement-bar-section,
+.utility-bar {
+  position: relative !important;
+  z-index: 40 !important;
+}
+
+/* Base Header Section Wrapper when Transparent is enabled on Homepage */
+.template-index .section-header.section-header--transparent,
+.section-header--transparent {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+}
+
+.template-index #MainContent {
+  margin-top: calc(-1 * var(--header-height, 90px));
+  position: relative;
+  z-index: 1;
+}
+
+/* Sticky Header Behavior (Uses Dawn's native sticky mechanism) */
+.shopify-section-header-sticky,
+.section-header.shopify-section-header-sticky,
+.section-header--transparent.shopify-section-header-sticky {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 35 !important;
+}
+
+.section-header--transparent.shopify-section-header-hidden {
+  top: calc(-1 * var(--header-height, 90px));
+}
+
+/* Header Wrapper */
+.header-wrapper--transparent {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none !important;
+  transition: background-color var(--header-transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+              background var(--header-transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+              border-color var(--header-transition-speed) ease,
+              box-shadow var(--header-transition-speed) ease,
+              color var(--header-transition-speed) ease;
+}
+
+/* --------------------------------------------------------------------------
+   Transparent State (Top of Homepage, not hovered, not focused, not scrolled)
+   -------------------------------------------------------------------------- */
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-bottom-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__heading-link,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__heading-link .h2,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__menu-item,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__contact-link,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__icon,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__active-menu-item,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) summary.list-menu__item,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) shopify-account {
+  color: var(--header-transparent-text, #ffffff) !important;
+}
+
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__icon svg path,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__icon svg circle,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__icon svg line,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__icon svg rect,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .modal__toggle-open svg path,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .modal__toggle-open svg circle,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .modal__toggle-open svg line,
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__menu-item svg {
+  stroke: var(--header-transparent-text, #ffffff);
+}
+
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .cart-count-bubble {
+  background-color: var(--header-transparent-text, #ffffff) !important;
+  color: var(--header-solid-text, #121212) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Solid State (Hover, Focus-within, Scrolled, or Mobile Menu Open)
+   -------------------------------------------------------------------------- */
+.header-wrapper--transparent.is-solid,
+.header-wrapper--transparent:hover,
+.header-wrapper--transparent:focus-within {
+  background-color: var(--header-solid-bg, #ffffff) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.header-wrapper--transparent.is-solid .header__heading-link,
+.header-wrapper--transparent.is-solid .header__heading-link .h2,
+.header-wrapper--transparent.is-solid .header__menu-item,
+.header-wrapper--transparent.is-solid .header__contact-link,
+.header-wrapper--transparent.is-solid .header__icon,
+.header-wrapper--transparent.is-solid .header__active-menu-item,
+.header-wrapper--transparent.is-solid summary.list-menu__item,
+.header-wrapper--transparent.is-solid shopify-account,
+.header-wrapper--transparent:hover .header__heading-link,
+.header-wrapper--transparent:hover .header__heading-link .h2,
+.header-wrapper--transparent:hover .header__menu-item,
+.header-wrapper--transparent:hover .header__contact-link,
+.header-wrapper--transparent:hover .header__icon,
+.header-wrapper--transparent:hover .header__active-menu-item,
+.header-wrapper--transparent:hover summary.list-menu__item,
+.header-wrapper--transparent:hover shopify-account,
+.header-wrapper--transparent:focus-within .header__heading-link,
+.header-wrapper--transparent:focus-within .header__heading-link .h2,
+.header-wrapper--transparent:focus-within .header__menu-item,
+.header-wrapper--transparent:focus-within .header__contact-link,
+.header-wrapper--transparent:focus-within .header__icon,
+.header-wrapper--transparent:focus-within .header__active-menu-item,
+.header-wrapper--transparent:focus-within summary.list-menu__item,
+.header-wrapper--transparent:focus-within shopify-account {
+  color: var(--header-solid-text, #121212) !important;
+}
+
+.header-wrapper--transparent.is-solid .header__icon svg path,
+.header-wrapper--transparent.is-solid .header__icon svg circle,
+.header-wrapper--transparent.is-solid .header__icon svg line,
+.header-wrapper--transparent.is-solid .header__icon svg rect,
+.header-wrapper--transparent.is-solid .modal__toggle-open svg path,
+.header-wrapper--transparent.is-solid .modal__toggle-open svg circle,
+.header-wrapper--transparent.is-solid .modal__toggle-open svg line,
+.header-wrapper--transparent.is-solid .header__menu-item svg,
+.header-wrapper--transparent:hover .header__icon svg path,
+.header-wrapper--transparent:hover .header__icon svg circle,
+.header-wrapper--transparent:hover .header__icon svg line,
+.header-wrapper--transparent:hover .header__icon svg rect,
+.header-wrapper--transparent:hover .modal__toggle-open svg path,
+.header-wrapper--transparent:hover .modal__toggle-open svg circle,
+.header-wrapper--transparent:hover .modal__toggle-open svg line,
+.header-wrapper--transparent:hover .header__menu-item svg,
+.header-wrapper--transparent:focus-within .header__icon svg path,
+.header-wrapper--transparent:focus-within .header__icon svg circle,
+.header-wrapper--transparent:focus-within .header__icon svg line,
+.header-wrapper--transparent:focus-within .header__icon svg rect,
+.header-wrapper--transparent:focus-within .modal__toggle-open svg path,
+.header-wrapper--transparent:focus-within .modal__toggle-open svg circle,
+.header-wrapper--transparent:focus-within .modal__toggle-open svg line,
+.header-wrapper--transparent:focus-within .header__menu-item svg {
+  stroke: var(--header-solid-text, #121212);
+}
+
+.header-wrapper--transparent.is-solid .cart-count-bubble,
+.header-wrapper--transparent:hover .cart-count-bubble,
+.header-wrapper--transparent:focus-within .cart-count-bubble {
+  background-color: var(--header-solid-text, #121212) !important;
+  color: var(--header-solid-bg, #ffffff) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Dual Logo Switching & Smooth Transition
+   -------------------------------------------------------------------------- */
+.header__heading-logo-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.header__heading-logo--transparent,
+.header__heading-logo--solid {
+  transition: opacity var(--header-transition-speed) ease,
+              transform var(--header-transition-speed) ease,
+              visibility var(--header-transition-speed) ease;
+  height: auto;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* Initial Transparent State */
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__heading-logo-wrapper--dual .header__heading-logo--transparent {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+.header-wrapper--transparent:not(.is-solid):not(:hover):not(:focus-within) .header__heading-logo-wrapper--dual .header__heading-logo--solid {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* Solid/Hover/Scrolled State */
+.header-wrapper--transparent.is-solid .header__heading-logo-wrapper--dual .header__heading-logo--transparent,
+.header-wrapper--transparent:hover .header__heading-logo-wrapper--dual .header__heading-logo--transparent,
+.header-wrapper--transparent:focus-within .header__heading-logo-wrapper--dual .header__heading-logo--transparent {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.header-wrapper--transparent.is-solid .header__heading-logo-wrapper--dual .header__heading-logo--solid,
+.header-wrapper--transparent:hover .header__heading-logo-wrapper--dual .header__heading-logo--solid,
+.header-wrapper--transparent:focus-within .header__heading-logo-wrapper--dual .header__heading-logo--solid {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Luxury Header Layout (Inspired by Reference Screenshot)
+   -------------------------------------------------------------------------- */
+.header__contact-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 1.2rem;
+  letter-spacing: 0.18rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 0.8rem 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.header__contact-link:hover {
+  opacity: 0.8;
+  transform: translateX(2px);
+}
+
+@media screen and (min-width: 990px) {
+  .header--luxury-center {
+    display: grid;
+    grid-template-areas:
+      'contact heading icons'
+      'navigation navigation navigation';
+    grid-template-columns: 1fr auto 1fr;
+    row-gap: 1.2rem;
+    padding-top: 1.8rem;
+    padding-bottom: 1.4rem;
+  }
+
+  .header--luxury-center .header__contact-link {
+    grid-area: contact;
+    justify-self: start;
+    align-self: center;
+  }
+
+  .header--luxury-center .header__heading,
+  .header--luxury-center .header__heading-link {
+    grid-area: heading;
+    justify-self: center;
+    text-align: center;
+    margin: 0;
+  }
+
+  .header--luxury-center .header__icons {
+    grid-area: icons;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .header--luxury-center .header__inline-menu {
+    grid-area: navigation;
+    justify-self: center;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 0.4rem;
+  }
+
+  .header--luxury-center .list-menu--inline {
+    justify-content: center;
+    column-gap: 3.2rem;
+  }
+
+  .header--luxury-center .header__menu-item {
+    font-size: 1.3rem;
+    letter-spacing: var(--nav-letter-spacing, 0.16rem);
+    text-transform: var(--nav-text-transform, uppercase);
+    font-weight: var(--nav-font-weight, 500);
+    padding-left: 0;
+    padding-right: 0;
+    position: relative;
+    transition: opacity 0.2s ease;
+  }
+
+  /* Remove visible dropdown chevron/arrow from desktop navigation */
+  .header__inline-menu > ul > li > header-menu > details > summary .icon-caret,
+  .header__inline-menu > .list-menu > li > header-menu > details > summary .icon-caret {
+    display: none !important;
+  }
+
+  /* Reset summary padding so SHOP perfectly aligns with HOME and INGREDIENTS */
+  .header__inline-menu > ul > li > header-menu > details > summary.list-menu__item,
+  .header__inline-menu > .list-menu > li > header-menu > details > summary.list-menu__item,
+  .header__inline-menu summary.list-menu__item,
+  .header--luxury-center summary.list-menu__item {
+    padding-right: 0 !important;
+  }
+
+  /* Elegant underline indicator: appears ONLY on hover or while dropdown is actively open */
+  .header__inline-menu .header__menu-item,
+  .header__inline-menu summary.header__menu-item {
+    position: relative;
+    text-decoration: none !important;
+  }
+
+  .header__inline-menu .header__menu-item::after,
+  .header__inline-menu summary.header__menu-item::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background-color: currentColor;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .header__inline-menu .header__menu-item:hover::after,
+  .header__inline-menu details[open] > summary.header__menu-item::after {
+    width: 100%;
+  }
+
+  /* Dropdown hover hit-area bridge to eliminate any gap between summary and submenu */
+  .header__inline-menu header-menu {
+    position: relative;
+    display: inline-block;
+  }
+
+  .header__inline-menu .header__submenu::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    background: transparent;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Global Navigation Styling & Reset Active Underlines
+   -------------------------------------------------------------------------- */
+.header__inline-menu .header__menu-item,
+.header__inline-menu .header__menu-item span,
+.header__inline-menu .header__active-menu-item,
+.header__inline-menu details[open] > .header__menu-item,
+.header__inline-menu details[open]:hover > .header__menu-item,
+.header__inline-menu .list-menu__item--active {
+  text-decoration: none !important;
+  font-weight: var(--nav-font-weight, 500);
+}
+
+.header__inline-menu .header__menu-item:hover span {
+  text-decoration: none !important;
+}
+
+.header__inline-menu .header__menu-item:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Adjustments
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 989px) {
+  .header__contact-link {
+    display: none;
+  }
+
+  /* Mobile menu open state forces solid background */
+  .menu-opening .header-wrapper--transparent {
+    background-color: var(--header-solid-bg, #ffffff) !important;
+  }
+}
+
+/* ==========================================================================
+   LUXURY IMAGE MEGA MENU
+   ========================================================================== */
+
+/* Header positioning context for full-width dropdown */
+.header-wrapper {
+  position: relative;
+}
+
+@media screen and (min-width: 990px) {
+  .header__inline-menu .header-menu--has-mega {
+    position: static !important;
+  }
+
+  .luxury-mega-menu-details {
+    position: static !important;
+  }
+
+  /* Mega Menu Dropdown Container */
+  .luxury-mega-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background-color: var(--luxury-mega-bg, #ffffff) !important;
+    color: var(--luxury-mega-text, #121212) !important;
+    padding-top: 3.4rem !important;
+    padding-bottom: 3.8rem !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
+    z-index: 32 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Invisible bridge extending upwards to eliminate any gap */
+  .luxury-mega-menu::before {
+    content: '';
+    position: absolute;
+    top: -24px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: transparent;
+    pointer-events: auto;
+  }
+
+  /* Dropdown Open/Close Transitions */
+  .js details.luxury-mega-menu-details .luxury-mega-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0.25s ease;
+    pointer-events: none;
+  }
+
+  details.luxury-mega-menu-details[open] .luxury-mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Mega Menu Grid Layout */
+  .luxury-mega-menu__inner {
+    max-width: var(--page-width, 1200px);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    box-sizing: border-box;
+  }
+
+  .luxury-mega-menu__grid {
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .luxury-mega-menu__grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 760px;
+    margin-inline: auto;
+  }
+
+  .luxury-mega-menu__grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .luxury-mega-menu__grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .luxury-mega-menu__grid--5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .luxury-mega-menu__grid--6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  /* Mega Menu Card */
+  .luxury-mega-menu__item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .luxury-mega-menu__card-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .luxury-mega-menu__card-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  /* Media / Image Wrapper */
+  .luxury-mega-menu__media-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: #f7f7f7;
+    border-radius: 0;
+  }
+
+  .luxury-mega-menu__media--wide {
+    aspect-ratio: 4 / 3;
+  }
+
+  .luxury-mega-menu__media--landscape {
+    aspect-ratio: 16 / 9;
+  }
+
+  .luxury-mega-menu__media--square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .luxury-mega-menu__media--portrait {
+    aspect-ratio: 3 / 4;
+  }
+
+  .luxury-mega-menu__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .luxury-mega-menu__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    min-height: 140px;
+  }
+
+  .luxury-mega-menu__placeholder svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.35;
+  }
+
+  /* Subtle image scale hover */
+  .luxury-mega-menu__card-link:hover .luxury-mega-menu__image {
+    transform: scale(1.045);
+  }
+
+  /* Typography */
+  .luxury-mega-menu__info {
+    margin-top: 1.3rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .luxury-mega-menu__title {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16rem;
+    color: var(--luxury-mega-text, #121212);
+    line-height: 1.35;
+    transition: opacity 0.2s ease;
+  }
+
+  .luxury-mega-menu__card-link:hover .luxury-mega-menu__title {
+    opacity: 0.7;
+  }
+
+  .luxury-mega-menu__subtitle {
+    margin-top: 0.4rem;
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.12rem;
+    text-transform: uppercase;
+    color: rgba(18, 18, 18, 0.55);
+    line-height: 1.3;
+  }
+}
+
+/* Ensure transparent header switches to solid when mega menu is open */
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) {
+  background-color: var(--header-solid-bg, #ffffff) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__heading-link,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__heading-link .h2,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__menu-item,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__contact-link,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__icon,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) summary.list-menu__item,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) shopify-account {
+  color: var(--header-solid-text, #121212) !important;
+}
+
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__icon svg path,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__icon svg circle,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__icon svg line,
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__icon svg rect {
+  stroke: var(--header-solid-text, #121212);
+}
+
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__heading-logo-wrapper--dual .header__heading-logo--transparent {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  position: absolute !important;
+}
+
+.header-wrapper--transparent:has(.luxury-mega-menu-details[open]) .header__heading-logo-wrapper--dual .header__heading-logo--solid {
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative !important;
+  transform: none !important;
+}
+
+/* Mobile Drawer Mega Menu Cards */
+.menu-drawer__mega-cards {
+  padding: 1.6rem 2rem 2.4rem 2rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.menu-drawer__mega-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.6rem 1.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-drawer__mega-item {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-drawer__mega-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu-drawer__mega-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  border-radius: 0;
+}
+
+.menu-drawer__mega-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.menu-drawer__mega-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
+
+.menu-drawer__mega-placeholder svg {
+  width: 50%;
+  height: 50%;
+  opacity: 0.35;
+}
+
+.menu-drawer__mega-title {
+  margin-top: 0.8rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12rem;
+  text-align: center;
+  color: inherit;
+}
