@@ -1,0 +1,603 @@
+/* ==========================================================================
+   PARIZAAD INSTAGRAM STORIES & SHOPPABLE UGC GALLERY
+   Scoped styling for customer stories with shoppable product overlays
+   ========================================================================== */
+
+.parizaad-stories-section {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.parizaad-stories__wrapper {
+  max-width: var(--stories-max-width, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+}
+
+@media screen and (min-width: 750px) {
+  .parizaad-stories__wrapper {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .parizaad-stories__wrapper {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Header: Title, Subtitle, Instagram Follow Link
+   -------------------------------------------------------------------------- */
+.parizaad-stories__header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-bottom: 3.2rem;
+}
+
+@media screen and (min-width: 750px) {
+  .parizaad-stories__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+  }
+}
+
+.parizaad-stories__title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.parizaad-stories__heading {
+  margin: 0;
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: inherit;
+  line-height: 1.15;
+}
+
+.parizaad-stories__heading--h0 {
+  font-size: clamp(3.2rem, 4.5vw, 4.8rem);
+}
+
+.parizaad-stories__heading--h1 {
+  font-size: clamp(2.6rem, 3.5vw, 3.8rem);
+}
+
+.parizaad-stories__heading--h2 {
+  font-size: clamp(2.2rem, 2.5vw, 3rem);
+}
+
+.parizaad-stories__subheading {
+  margin: 0;
+  font-size: 1.45rem;
+  color: #666666;
+  line-height: 1.4;
+  letter-spacing: 0.02rem;
+}
+
+/* Top-Right Instagram Follow Link */
+.parizaad-stories__instagram-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.08rem;
+  text-transform: lowercase;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0.6rem 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  align-self: flex-start;
+}
+
+@media screen and (min-width: 750px) {
+  .parizaad-stories__instagram-link {
+    align-self: flex-end;
+  }
+}
+
+.parizaad-stories__instagram-link:hover {
+  opacity: 0.75;
+  transform: translateY(-1px);
+}
+
+.parizaad-stories__instagram-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Carousel & Story Cards Layout
+   -------------------------------------------------------------------------- */
+.parizaad-stories__carousel-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.parizaad-stories__carousel {
+  display: flex;
+  gap: var(--card-gap, 20px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.4rem 0.2rem 1.4rem 0.2rem;
+  margin: 0;
+  list-style: none;
+}
+
+.parizaad-stories__carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card sizing per breakpoint */
+.parizaad-stories__card {
+  flex-shrink: 0;
+  position: relative;
+  border-radius: var(--card-radius, 16px);
+  overflow: hidden;
+  scroll-snap-align: start;
+  background-color: #EFEFEF;
+  box-sizing: border-box;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  user-select: none;
+  width: calc((100% - (var(--card-gap, 20px) * 0.4)) / var(--mobile-cols, 1.35));
+}
+
+@media screen and (min-width: 600px) and (max-width: 989px) {
+  .parizaad-stories__card {
+    width: calc((100% - (var(--card-gap, 20px) * (var(--tablet-cols, 2) - 1))) / var(--tablet-cols, 2));
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .parizaad-stories__card {
+    width: calc((100% - (var(--card-gap, 20px) * (var(--desktop-cols, 4) - 1))) / var(--desktop-cols, 4));
+  }
+}
+
+.parizaad-stories__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Story Media (Image / Video)
+   -------------------------------------------------------------------------- */
+.parizaad-stories__media-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--aspect-ratio, 3 / 4);
+  overflow: hidden;
+  background-color: #E7E6E4;
+}
+
+.parizaad-stories__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.parizaad-stories__card:hover .parizaad-stories__media {
+  transform: scale(1.04);
+}
+
+/* Subtle gradient at the bottom so overlays stand out crisply */
+.parizaad-stories__media-wrap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.35) 100%);
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+/* Top Badge / Customer Tag */
+.parizaad-stories__badge-wrap {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.parizaad-stories__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  border-radius: 20px;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.04rem;
+}
+
+/* Reel / Video Play Icon indicator */
+.parizaad-stories__video-indicator {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 4;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Shoppable Product Overlay (Core Visual Feature)
+   -------------------------------------------------------------------------- */
+.parizaad-stories__product-overlay {
+  position: absolute;
+  bottom: var(--overlay-offset, 14px);
+  left: var(--overlay-offset, 14px);
+  right: var(--overlay-offset, 14px);
+  z-index: 5;
+  background-color: var(--overlay-bg, #FFFFFF);
+  color: var(--overlay-text, #121212);
+  border-radius: var(--overlay-radius, 12px);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.parizaad-stories__product-overlay:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+}
+
+.parizaad-stories__product-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.parizaad-stories__product-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #F4F4F4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parizaad-stories__product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.parizaad-stories__product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.parizaad-stories__product-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+  margin: 0 0 0.2rem 0;
+}
+
+.parizaad-stories__product-price-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1;
+}
+
+.parizaad-stories__product-compare-price {
+  text-decoration: line-through;
+  opacity: 0.55;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+/* Plus Button (Right side of overlay) */
+.parizaad-stories__plus-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--plus-bg, #121212);
+  color: var(--plus-icon, #FFFFFF);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parizaad-stories__plus-btn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.parizaad-stories__plus-btn:active {
+  transform: scale(0.95);
+}
+
+.parizaad-stories__plus-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: opacity 0.15s ease;
+}
+
+/* Loading state for Add to Cart */
+.parizaad-stories__spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: parizaadStorySpin 0.65s linear infinite;
+  position: absolute;
+}
+
+.parizaad-stories__plus-btn.is-loading .parizaad-stories__plus-icon {
+  opacity: 0;
+}
+
+.parizaad-stories__plus-btn.is-loading .parizaad-stories__spinner {
+  display: block;
+}
+
+@keyframes parizaadStorySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Carousel Navigation (Arrows & Dots)
+   -------------------------------------------------------------------------- */
+.parizaad-stories__nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: #121212;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  outline: none;
+}
+
+.parizaad-stories__nav-arrow:hover {
+  background-color: #121212;
+  color: #FFFFFF;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.parizaad-stories__nav-arrow--prev {
+  left: -20px;
+}
+
+.parizaad-stories__nav-arrow--next {
+  right: -20px;
+}
+
+@media screen and (max-width: 989px) {
+  .parizaad-stories__nav-arrow {
+    display: none;
+  }
+}
+
+.parizaad-stories__nav-arrow[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Pagination Dots */
+.parizaad-stories__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  list-style: none;
+  padding: 0;
+}
+
+.parizaad-stories__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: width 0.25s ease, background-color 0.25s ease, border-radius 0.25s ease;
+}
+
+.parizaad-stories__dot.is-active {
+  width: 24px;
+  border-radius: 10px;
+  background-color: #121212;
+}
+
+/* --------------------------------------------------------------------------
+   Media Lightbox Modal
+   -------------------------------------------------------------------------- */
+.parizaad-stories-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.parizaad-stories-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.parizaad-stories-modal__content {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: #000000;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.parizaad-stories-modal.is-open .parizaad-stories-modal__content {
+  transform: scale(1);
+}
+
+.parizaad-stories-modal__media-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background-color: #121212;
+  overflow: hidden;
+}
+
+.parizaad-stories-modal__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.parizaad-stories-modal__close {
+  position: absolute;
+  top: 1.6rem;
+  right: 1.6rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 20;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.parizaad-stories-modal__close:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: scale(1.08);
+}
+
+.parizaad-stories-modal__overlay-wrap {
+  position: absolute;
+  bottom: 2rem;
+  left: 1.6rem;
+  right: 1.6rem;
+  z-index: 15;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility & Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .parizaad-stories__carousel,
+  .parizaad-stories__card,
+  .parizaad-stories__media,
+  .parizaad-stories__product-overlay,
+  .parizaad-stories-modal,
+  .parizaad-stories-modal__content {
+    transition: none !important;
+    animation: none !important;
+  }
+}

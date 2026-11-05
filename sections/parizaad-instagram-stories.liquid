@@ -1,0 +1,738 @@
+{{ 'parizaad-instagram-stories.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'parizaad-instagram-stories.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .parizaad-stories__wrapper {
+    --stories-max-width: {{ section.settings.content_max_width }}px;
+    --card-gap: {{ section.settings.card_gap }}px;
+    --card-radius: {{ section.settings.card_border_radius }}px;
+    --aspect-ratio: {{ section.settings.card_aspect_ratio }};
+    --desktop-cols: {{ section.settings.desktop_columns }};
+    --tablet-cols: {{ section.settings.tablet_columns }};
+    --mobile-cols: {{ section.settings.mobile_columns }};
+    --overlay-bg: {{ section.settings.overlay_bg_color }};
+    --overlay-text: {{ section.settings.overlay_text_color }};
+    --overlay-radius: {{ section.settings.overlay_border_radius }}px;
+    --overlay-offset: {{ section.settings.overlay_bottom_offset }}px;
+    --plus-bg: {{ section.settings.plus_button_bg }};
+    --plus-icon: {{ section.settings.plus_button_icon_color }};
+  }
+
+  {%- if section.settings.section_bg_color != blank -%}
+    #shopify-section-{{ section.id }} {
+      background-color: {{ section.settings.section_bg_color }};
+    }
+  {%- endif -%}
+{%- endstyle -%}
+
+<div class="parizaad-stories-section color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="parizaad-stories__wrapper">
+    {%- comment -%} Section Header {%- endcomment -%}
+    <div class="parizaad-stories__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      <div class="parizaad-stories__title-wrap">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="parizaad-stories__heading parizaad-stories__heading--{{ section.settings.heading_size }}">
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="parizaad-stories__subheading">
+            {{ section.settings.subheading }}
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_instagram_link and section.settings.instagram_url != blank -%}
+        <a
+          href="{{ section.settings.instagram_url }}"
+          class="parizaad-stories__instagram-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="{{ section.settings.instagram_link_text | default: 'follow us on Instagram' }}"
+        >
+          {%- if section.settings.show_instagram_icon -%}
+            <span class="parizaad-stories__instagram-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </span>
+          {%- endif -%}
+          <span>{{ section.settings.instagram_link_text | default: 'follow us' }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Parizaad Stories Web Component {%- endcomment -%}
+    <parizaad-instagram-stories
+      class="parizaad-stories__component"
+      data-card-click-action="{{ section.settings.card_click_action }}"
+      data-plus-button-action="{{ section.settings.plus_button_action }}"
+      data-autoplay="{{ section.settings.enable_autoplay }}"
+      data-autoplay-interval="{{ section.settings.autoplay_interval }}"
+    >
+      <div class="parizaad-stories__carousel-wrap{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {%- if section.settings.show_arrows and section.blocks.size > 1 -%}
+          <button
+            type="button"
+            class="parizaad-stories__nav-arrow parizaad-stories__nav-arrow--prev"
+            aria-label="Previous stories"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+        {%- endif -%}
+
+        <div class="parizaad-stories__carousel" tabindex="0" role="region" aria-label="Customer stories gallery">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign product = block.settings.product
+              assign is_video = false
+              if block.settings.media_type == 'video' and block.settings.video != blank
+                assign is_video = true
+              endif
+            -%}
+
+            <div
+              class="parizaad-stories__card"
+              {{ block.shopify_attributes }}
+              data-block-id="{{ block.id }}"
+              data-media-type="{% if is_video %}video{% else %}image{% endif %}"
+              data-card-action="{{ block.settings.click_action }}"
+              {% if product != blank %}
+                data-product-url="{{ product.url }}"
+              {% endif %}
+              {% if block.settings.instagram_post_url != blank %}
+                data-instagram-url="{{ block.settings.instagram_post_url | escape }}"
+              {% endif %}
+              {% if is_video and block.settings.video.sources[0].url != blank %}
+                data-video-src="{{ block.settings.video.sources[0].url }}"
+              {% endif %}
+              {% if block.settings.image != blank %}
+                data-full-image="{{ block.settings.image | image_url: width: 1200 }}"
+              {% endif %}
+              data-alt="{{ block.settings.media_alt | default: block.settings.caption | escape }}"
+            >
+              <div class="parizaad-stories__media-wrap">
+                {%- if is_video -%}
+                  {{
+                    block.settings.video
+                    | video_tag:
+                      autoplay: false,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      poster: block.settings.video_poster | image_url: width: 600,
+                      class: 'parizaad-stories__media',
+                      image_size: '600x'
+                  }}
+                  <span class="parizaad-stories__video-indicator" aria-label="Video story">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                  </span>
+                {%- elsif block.settings.image != blank -%}
+                  {%- assign alt_text = block.settings.media_alt | default: block.settings.caption | default: 'Customer story image' -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 800
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '300, 450, 600, 800',
+                      sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 75vw',
+                      alt: alt_text,
+                      class: 'parizaad-stories__media'
+                  }}
+                {%- else -%}
+                  <div class="parizaad-stories__media" style="display:flex; align-items:center; justify-content:center; background:#ECEBE8; width:100%; height:100%;">
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+
+                {%- comment -%} Customer Handle or Badge {%- endcomment -%}
+                {%- if block.settings.customer_name != blank or block.settings.custom_badge != blank -%}
+                  <div class="parizaad-stories__badge-wrap">
+                    <span class="parizaad-stories__badge">
+                      {%- if block.settings.customer_name != blank -%}
+                        {{ block.settings.customer_name }}
+                      {%- else -%}
+                        {{ block.settings.custom_badge }}
+                      {%- endif -%}
+                    </span>
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- comment -%} Shoppable Product Overlay {%- endcomment -%}
+              {%- if section.settings.show_product_overlay and block.settings.show_product_overlay and product != blank -%}
+                <div class="parizaad-stories__product-overlay">
+                  <a href="{{ product.url }}" class="parizaad-stories__product-main" tabindex="-1" aria-hidden="true">
+                    <div class="parizaad-stories__product-thumb">
+                      {%- if product.featured_image != blank -%}
+                        {{
+                          product.featured_image
+                          | image_url: width: 100
+                          | image_tag: loading: 'lazy', alt: product.title, width: 44, height: 44
+                        }}
+                      {%- else -%}
+                        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                      {%- endif -%}
+                    </div>
+                    <div class="parizaad-stories__product-info">
+                      <span class="parizaad-stories__product-title">{{ product.title }}</span>
+                      <div class="parizaad-stories__product-price-wrap">
+                        <span>{{ product.price | money }}</span>
+                        {%- if product.compare_at_price > product.price -%}
+                          <s class="parizaad-stories__product-compare-price">{{ product.compare_at_price | money }}</s>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </a>
+
+                  <button
+                    type="button"
+                    class="parizaad-stories__plus-btn"
+                    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                    data-available="{{ product.available }}"
+                    data-has-only-default-variant="{{ product.has_only_default_variant }}"
+                    aria-label="{% if section.settings.plus_button_action == 'cart' %}Add {{ product.title | escape }} to cart{% else %}View {{ product.title | escape }}{% endif %}"
+                  >
+                    <span class="parizaad-stories__plus-icon" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                    </span>
+                    <span class="parizaad-stories__spinner" aria-hidden="true"></span>
+                  </button>
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- if section.settings.show_arrows and section.blocks.size > 1 -%}
+          <button
+            type="button"
+            class="parizaad-stories__nav-arrow parizaad-stories__nav-arrow--next"
+            aria-label="Next stories"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_dots and section.blocks.size > 1 -%}
+        <div class="parizaad-stories__dots" aria-hidden="true"></div>
+      {%- endif -%}
+
+      {%- comment -%} Lightbox Modal Container {%- endcomment -%}
+      <div class="parizaad-stories-modal" role="dialog" aria-modal="true" aria-label="Story preview">
+        <div class="parizaad-stories-modal__content">
+          <button type="button" class="parizaad-stories-modal__close" aria-label="Close modal">&times;</button>
+          <div class="parizaad-stories-modal__media-wrap"></div>
+          <div class="parizaad-stories-modal__overlay-wrap"></div>
+        </div>
+      </div>
+    </parizaad-instagram-stories>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Parizaad Stories",
+  "tag": "section",
+  "class": "section section-parizaad-instagram-stories",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "Our customer stories",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "default": "See how our products are impacting our customers",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Instagram Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_instagram_link",
+      "label": "Show Instagram follow link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "instagram_link_text",
+      "default": "follow us",
+      "label": "Link text"
+    },
+    {
+      "type": "text",
+      "id": "instagram_url",
+      "default": "https://instagram.com",
+      "label": "Instagram profile URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_instagram_icon",
+      "label": "Show Instagram icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout & Grid"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background color (optional)"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 1000,
+      "max": 1800,
+      "step": 40,
+      "unit": "px",
+      "label": "Maximum container width",
+      "default": 1400
+    },
+    {
+      "type": "select",
+      "id": "card_aspect_ratio",
+      "options": [
+        {
+          "value": "3 / 4",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "9 / 16",
+          "label": "Reels / Stories (9:16)"
+        },
+        {
+          "value": "4 / 5",
+          "label": "Instagram Post (4:5)"
+        },
+        {
+          "value": "1 / 1",
+          "label": "Square (1:1)"
+        }
+      ],
+      "default": "3 / 4",
+      "label": "Card aspect ratio"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "desktop_columns",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "label": "Desktop visible cards",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "tablet_columns",
+      "options": [
+        {
+          "value": "2",
+          "label": "2 Cards"
+        },
+        {
+          "value": "3",
+          "label": "3 Cards"
+        }
+      ],
+      "default": "2",
+      "label": "Tablet visible cards"
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "options": [
+        {
+          "value": "1.2",
+          "label": "1.2 Cards (Peek)"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35 Cards (Balanced)"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5 Cards (Wide Peek)"
+        }
+      ],
+      "default": "1.35",
+      "label": "Mobile visible cards"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Card gap",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Carousel Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show pagination dots",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable carousel autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay interval",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Shoppable Product Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_overlay",
+      "label": "Show product overlays",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg_color",
+      "label": "Overlay background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Overlay text color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "overlay_border_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Overlay border radius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "overlay_bottom_offset",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Overlay bottom spacing",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "plus_button_bg",
+      "label": "Plus button background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "plus_button_icon_color",
+      "label": "Plus button icon color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "select",
+      "id": "plus_button_action",
+      "options": [
+        {
+          "value": "product",
+          "label": "Open Product Page"
+        },
+        {
+          "value": "cart",
+          "label": "Quick Add to Cart"
+        },
+        {
+          "value": "quickview",
+          "label": "Open Quick View"
+        }
+      ],
+      "default": "product",
+      "label": "Plus button action"
+    },
+    {
+      "type": "select",
+      "id": "card_click_action",
+      "options": [
+        {
+          "value": "product",
+          "label": "Open Product Page"
+        },
+        {
+          "value": "lightbox",
+          "label": "Open Media Lightbox"
+        },
+        {
+          "value": "instagram",
+          "label": "Open Instagram Post"
+        },
+        {
+          "value": "none",
+          "label": "No Action"
+        }
+      ],
+      "default": "product",
+      "label": "Story card click action"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "story",
+      "name": "Instagram Story",
+      "settings": [
+        {
+          "type": "select",
+          "id": "media_type",
+          "options": [
+            {
+              "value": "image",
+              "label": "Image"
+            },
+            {
+              "value": "video",
+              "label": "Shopify Video"
+            }
+          ],
+          "default": "image",
+          "label": "Media type"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Story image (portrait)"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Story video"
+        },
+        {
+          "type": "image_picker",
+          "id": "video_poster",
+          "label": "Video poster image"
+        },
+        {
+          "type": "text",
+          "id": "media_alt",
+          "label": "Media alt text"
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Customer name / Instagram handle",
+          "default": "@seole_luxury"
+        },
+        {
+          "type": "text",
+          "id": "custom_badge",
+          "label": "Badge label (optional)"
+        },
+        {
+          "type": "textarea",
+          "id": "caption",
+          "label": "Customer caption / review"
+        },
+        {
+          "type": "text",
+          "id": "instagram_post_url",
+          "label": "Instagram post URL (optional)"
+        },
+        {
+          "type": "header",
+          "content": "Shoppable Product"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Associated product"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_overlay",
+          "label": "Show product overlay on this card",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "click_action",
+          "options": [
+            {
+              "value": "product",
+              "label": "Open Product Page"
+            },
+            {
+              "value": "lightbox",
+              "label": "Open Media Lightbox"
+            },
+            {
+              "value": "instagram",
+              "label": "Open Instagram Post"
+            },
+            {
+              "value": "none",
+              "label": "No Action"
+            }
+          ],
+          "default": "product",
+          "label": "Card click action override"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Parizaad Instagram Stories",
+      "blocks": [
+        {
+          "type": "story",
+          "settings": {
+            "customer_name": "@sophia_styles",
+            "caption": "The most radiant glow I've ever experienced!"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "customer_name": "@elena_couture",
+            "caption": "A daily luxury ritual I cannot live without."
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "customer_name": "@charlotte_atelier",
+            "caption": "Obsessed with this texture and finish."
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "customer_name": "@isabella_muse",
+            "caption": "Effortless elegance every single morning."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

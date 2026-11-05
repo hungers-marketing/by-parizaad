@@ -1,4 +1,7 @@
 {{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+{{ 'advanced-contact-form.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'advanced-contact-form.js' | asset_url }}" defer="defer"></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -12,143 +15,304 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  #ContactFormContainer-{{ section.id }} {
+    --form-max-width: {{ section.settings.form_max_width }}px;
+    --form-bg: {{ section.settings.form_bg_color }};
+    --input-bg: {{ section.settings.input_bg_color }};
+    --input-text: {{ section.settings.input_text_color }};
+    --input-border: {{ section.settings.input_border_color }};
+    --input-radius: {{ section.settings.input_border_radius }}px;
+    --input-height: {{ section.settings.field_height }}px;
+    --textarea-height: {{ section.settings.textarea_height }}px;
+    --placeholder-color: {{ section.settings.placeholder_color }};
+    --btn-border: {{ section.settings.button_border_color }};
+    --btn-text: {{ section.settings.button_text_color }};
+    --btn-hover-bg: {{ section.settings.button_hover_bg }};
+    --btn-hover-text: {{ section.settings.button_hover_text }};
+    --btn-radius: {{ section.settings.button_border_radius }}px;
+  }
 {%- endstyle -%}
 
-<div class="color-{{ section.settings.color_scheme }} gradient">
-  <div class="contact page-width page-width--narrow section-{{ section.id }}-padding">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="title title-wrapper--no-top-margin inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-        {{ section.settings.heading }}
-      </h2>
-    {%- else -%}
-      <h2 class="visually-hidden">{{ 'templates.contact.form.title' | t }}</h2>
-    {%- endif -%}
-    {%- liquid
-      assign contact_form_class = 'isolate'
-      if settings.animations_reveal_on_scroll
-        assign contact_form_class = 'isolate scroll-trigger animate--slide-in'
-      endif
-    -%}
-    {%- form 'contact', id: 'ContactForm', class: contact_form_class -%}
-      {%- if form.posted_successfully? -%}
-        <h2 class="form-status form-status-list form__message" tabindex="-1" autofocus>
-          {{- 'icon-success.svg' | inline_asset_content -}}
-          {{ 'templates.contact.form.post_success' | t }}
-        </h2>
-      {%- elsif form.errors -%}
-        <div class="form__message">
-          <h2 class="form-status caption-large text-body" role="alert" tabindex="-1" autofocus>
-            {{- 'icon-error.svg' | inline_asset_content -}}
-            {{ 'templates.contact.form.error_heading' | t }}
+<div class="contact-form-section section-{{ section.id }}-padding">
+  <div class="page-width">
+    {%- if section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <div class="contact-form__title-wrapper{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="contact-form__title {{ section.settings.heading_size }}">
+            {{ section.settings.heading }}
           </h2>
-        </div>
-        <ul class="form-status-list caption-large" role="list">
-          <li>
-            <a href="#ContactForm-email" class="link">
-              {{ form.errors.translated_fields.email | capitalize }}
-              {{ form.errors.messages.email }}
-            </a>
-          </li>
-        </ul>
-      {%- endif -%}
-      <div class="contact__fields">
-        <div class="field">
-          <input
-            class="field__input"
-            autocomplete="name"
-            type="text"
-            id="ContactForm-name"
-            name="contact[{{ 'templates.contact.form.name' | t }}]"
-            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
-            placeholder="{{ 'templates.contact.form.name' | t }}"
-          >
-          <label class="field__label" for="ContactForm-name">{{ 'templates.contact.form.name' | t }}</label>
-        </div>
-        <div class="field field--with-error">
-          <input
-            autocomplete="email"
-            type="email"
-            id="ContactForm-email"
-            class="field__input"
-            name="contact[email]"
-            spellcheck="false"
-            autocapitalize="off"
-            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
-            aria-required="true"
-            {% if form.errors contains 'email' %}
-              aria-invalid="true"
-              aria-describedby="ContactForm-email-error"
-            {% endif %}
-            placeholder="{{ 'templates.contact.form.email' | t }}"
-          >
-          <label class="field__label" for="ContactForm-email">
-            {{- 'templates.contact.form.email' | t }}
-            <span aria-hidden="true">*</span></label
-          >
-          {%- if form.errors contains 'email' -%}
-            <small class="contact__field-error" id="ContactForm-email-error">
-              <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
-              <span class="form__message">
-                <span class="svg-wrapper">
-                  {{- 'icon-error.svg' | inline_asset_content -}}
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="contact-form__subtitle">
+            {{ section.settings.subtitle }}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div
+      id="ContactFormContainer-{{ section.id }}"
+      class="contact-form-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+      data-max-files="{{ section.settings.max_files }}"
+      data-max-total-mb="{{ section.settings.max_total_mb }}"
+      data-upload-endpoint="{{ section.settings.upload_endpoint | escape }}"
+    >
+      {%- form 'contact', id: 'ContactForm', class: 'isolate' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="contact-form__status-alert contact-form__status-alert--success" role="status" tabindex="-1" autofocus>
+            <div class="contact-form__status-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M6 10.2L8.6 13L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="contact-form__status-text">
+              <strong>Thank you for contacting us.</strong> We have received your message and will respond as soon as possible.
+            </div>
+          </div>
+        {%- elsif form.errors -%}
+          <div class="contact-form__status-alert contact-form__status-alert--error" role="alert" tabindex="-1" autofocus>
+            <div class="contact-form__status-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M10 6V11M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="contact-form__status-text">
+              <strong>Please check the following error:</strong>
+              <ul class="contact-form__error-list">
+                {%- for error in form.errors -%}
+                  <li>
+                    {%- if error == 'form' -%}
+                      {{ form.errors.messages[error] }}
+                    {%- else -%}
+                      {{ form.errors.translated_fields[error] | capitalize }} {{ form.errors.messages[error] }}
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </div>
+        {%- endif -%}
+
+        <div class="contact-form__body">
+          {%- comment -%} 1. First and Last Name* {%- endcomment -%}
+          <div class="contact-field">
+            <input
+              type="text"
+              id="ContactForm-name-{{ section.id }}"
+              class="contact-field__input"
+              name="contact[Name]"
+              autocomplete="name"
+              required
+              aria-required="true"
+              placeholder="First and Last Name*"
+              value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+            >
+            <span class="contact-field__error-msg" aria-live="polite"></span>
+          </div>
+
+          {%- comment -%} 2. Email* {%- endcomment -%}
+          <div class="contact-field">
+            <input
+              type="email"
+              id="ContactForm-email-{{ section.id }}"
+              class="contact-field__input"
+              name="contact[email]"
+              autocomplete="email"
+              spellcheck="false"
+              autocapitalize="off"
+              required
+              aria-required="true"
+              placeholder="Email*"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+            >
+            <span class="contact-field__error-msg" aria-live="polite"></span>
+          </div>
+
+          {%- comment -%} 3. Contact Reason* {%- endcomment -%}
+          {%- liquid
+            assign raw_reasons = section.settings.contact_reasons | newline_to_br | split: '<br />'
+          -%}
+          <div class="contact-field">
+            <select
+              name="contact[Contact Reason]"
+              id="ContactForm-reason-{{ section.id }}"
+              class="visually-hidden"
+              tabindex="-1"
+              aria-hidden="true"
+              required
+            >
+              <option value="" disabled selected>Select a Reason</option>
+              {%- for raw_line in raw_reasons -%}
+                {%- assign trimmed = raw_line | strip -%}
+                {%- if trimmed != blank -%}
+                  <option value="{{ trimmed | escape }}">{{ trimmed }}</option>
+                {%- endif -%}
+              {%- endfor -%}
+            </select>
+
+            <div class="contact-dropdown" id="ContactDropdown-{{ section.id }}">
+              <button
+                type="button"
+                class="contact-dropdown__trigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="ContactDropdownLabel-{{ section.id }}"
+              >
+                <span class="contact-dropdown__label" id="ContactDropdownLabel-{{ section.id }}">Select a Reason*</span>
+                <span class="contact-dropdown__arrow" aria-hidden="true">
+                  <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L7 7L13 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </span>
-                {{- form.errors.translated_fields.email | capitalize }}
-                {{ form.errors.messages.email -}}
+              </button>
+
+              <ul class="contact-dropdown__menu" role="listbox" aria-label="Contact Reason">
+                {%- for raw_line in raw_reasons -%}
+                  {%- assign trimmed = raw_line | strip -%}
+                  {%- if trimmed != blank -%}
+                    <li
+                      class="contact-dropdown__item"
+                      role="option"
+                      tabindex="-1"
+                      data-value="{{ trimmed | escape }}"
+                    >
+                      {{ trimmed }}
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+            <span class="contact-field__error-msg" aria-live="polite"></span>
+          </div>
+
+          {%- comment -%} 4. Conditional Order Number & Tip {%- endcomment -%}
+          {%- if section.settings.enable_conditional_order_field -%}
+            <div class="contact-field contact-conditional-field">
+              <input
+                type="text"
+                id="ContactForm-order-{{ section.id }}"
+                class="contact-field__input"
+                name="contact[Order Number]"
+                placeholder="Order Number (e.g. #1024)"
+              >
+              <span class="contact-conditional-tip">
+                Tip: Please attach clear photos of the damaged item, packaging, and shipping label below.
               </span>
-            </small>
+            </div>
           {%- endif -%}
+
+          {%- comment -%} 5. Topic* {%- endcomment -%}
+          <div class="contact-field">
+            <input
+              type="text"
+              id="ContactForm-topic-{{ section.id }}"
+              class="contact-field__input"
+              name="contact[Topic]"
+              required
+              aria-required="true"
+              placeholder="Topic*"
+            >
+            <span class="contact-field__error-msg" aria-live="polite"></span>
+          </div>
+
+          {%- comment -%} 6. Message / Details* {%- endcomment -%}
+          <div class="contact-field">
+            <textarea
+              id="ContactForm-body-{{ section.id }}"
+              class="contact-field__textarea"
+              name="contact[body]"
+              required
+              aria-required="true"
+              placeholder="Tell us the details.*"
+            >{{- form.body -}}</textarea>
+            <span class="contact-field__error-msg" aria-live="polite"></span>
+          </div>
+
+          {%- comment -%} 7. File Upload Area (Optional) {%- endcomment -%}
+          {%- if section.settings.enable_file_upload -%}
+            <div class="contact-upload-wrapper">
+              <input
+                type="file"
+                class="contact-upload__native visually-hidden"
+                id="ContactForm-files-{{ section.id }}"
+                multiple
+                accept="image/jpeg,image/png,image/webp,application/pdf"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+              <input
+                type="hidden"
+                name="contact[Attachments]"
+                class="contact-upload__summary"
+              >
+
+              <div
+                class="contact-upload"
+                role="button"
+                tabindex="0"
+                aria-label="Upload attachments: Drag or paste image here, or click to browse files"
+              >
+                <div class="contact-upload__left">
+                  <span class="contact-upload__icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </span>
+                  <span class="contact-upload__label-text">Drag or paste image here, or browse files</span>
+                </div>
+                <div class="contact-upload__right" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </div>
+              </div>
+
+              <span class="contact-upload__subtext">
+                Up to {{ section.settings.max_files }} files (max {{ section.settings.max_total_mb }}MB total). Formats: JPG, PNG, WEBP, PDF
+              </span>
+              <span class="contact-upload__error-msg contact-field__error-msg" style="display:block; text-align:center;"></span>
+
+              <div class="contact-upload__file-list" aria-live="polite"></div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} 8. Submit Button {%- endcomment -%}
+          <div class="contact-form__submit-wrapper">
+            <button type="submit" class="contact-form__submit">
+              <span class="contact-form__spinner" aria-hidden="true"></span>
+              <span class="contact-form__submit-text">{{ section.settings.button_text | default: 'SUBMIT' }}</span>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="field">
-        <input
-          type="tel"
-          id="ContactForm-phone"
-          class="field__input"
-          autocomplete="tel"
-          name="contact[{{ 'templates.contact.form.phone' | t }}]"
-          pattern="[0-9\-]*"
-          value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
-          placeholder="{{ 'templates.contact.form.phone' | t }}"
-        >
-        <label class="field__label" for="ContactForm-phone">{{ 'templates.contact.form.phone' | t }}</label>
-      </div>
-      <div class="field">
-        <textarea
-          rows="10"
-          id="ContactForm-body"
-          class="text-area field__input"
-          name="contact[{{ 'templates.contact.form.comment' | t }}]"
-          placeholder="{{ 'templates.contact.form.comment' | t }}"
-        >
-          {{- form.body -}}
-        </textarea>
-        <label class="form__label field__label" for="ContactForm-body">
-          {{- 'templates.contact.form.comment' | t -}}
-        </label>
-      </div>
-      <div class="contact__button">
-        <button type="submit" class="button">
-          {{ 'templates.contact.form.send' | t }}
-        </button>
-      </div>
-    {%- endform -%}
+      {%- endform -%}
+    </div>
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.contact-form.name",
+  "name": "Contact form",
   "tag": "section",
-  "class": "section",
+  "class": "section section-contact-form",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
   "settings": [
     {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
       "type": "inline_richtext",
       "id": "heading",
-      "default": "t:sections.contact-form.settings.title.default",
-      "label": "t:sections.contact-form.settings.title.label"
+      "default": "Contact Us",
+      "label": "Heading"
     },
     {
       "type": "select",
@@ -156,37 +320,198 @@
       "options": [
         {
           "value": "h2",
-          "label": "t:sections.all.heading_size.options__1.label"
+          "label": "Small"
         },
         {
           "value": "h1",
-          "label": "t:sections.all.heading_size.options__2.label"
+          "label": "Medium"
         },
         {
           "value": "h0",
-          "label": "t:sections.all.heading_size.options__3.label"
-        },
-        {
-          "value": "hxl",
-          "label": "t:sections.all.heading_size.options__4.label"
-        },
-        {
-          "value": "hxxl",
-          "label": "t:sections.all.heading_size.options__5.label"
+          "label": "Large"
         }
       ],
       "default": "h1",
-      "label": "t:sections.all.heading_size.label"
+      "label": "Heading size"
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
+      "type": "inline_richtext",
+      "id": "subtitle",
+      "default": "We'd love to hear from you. Please fill out the form below.",
+      "label": "Subtitle"
     },
     {
       "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
+      "content": "Layout & Form Colors"
+    },
+    {
+      "type": "range",
+      "id": "form_max_width",
+      "min": 500,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "label": "Form max width",
+      "default": 720
+    },
+    {
+      "type": "color",
+      "id": "form_bg_color",
+      "label": "Form container background",
+      "default": "#F2F1EF"
+    },
+    {
+      "type": "color",
+      "id": "input_bg_color",
+      "label": "Input background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border color",
+      "default": "rgba(0, 0, 0, 0.08)"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input text color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "placeholder_color",
+      "label": "Placeholder text color",
+      "default": "#777777"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Input border radius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "field_height",
+      "min": 44,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "label": "Field height",
+      "default": 58
+    },
+    {
+      "type": "range",
+      "id": "textarea_height",
+      "min": 140,
+      "max": 380,
+      "step": 10,
+      "unit": "px",
+      "label": "Message textarea height",
+      "default": 230
+    },
+    {
+      "type": "header",
+      "content": "Contact Reasons"
+    },
+    {
+      "type": "textarea",
+      "id": "contact_reasons",
+      "label": "Contact reasons (one per line)",
+      "default": "Order Status\nShipping & Delivery\nReturns & Exchanges\nDamaged or Defective Item\nProduct Inquiry\nJewelry Sizing & Fit\nCustom / Bespoke Design\nPayment & Billing\nWholesale & Collaborations\nPress & Media Inquiries\nOther"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_conditional_order_field",
+      "label": "Enable conditional order number field",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "File Attachments"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_file_upload",
+      "label": "Enable file upload box",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "max_files",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "label": "Max files allowed",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "max_total_mb",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "MB",
+      "label": "Max total size (MB)",
+      "default": 50
+    },
+    {
+      "type": "text",
+      "id": "upload_endpoint",
+      "label": "Custom upload endpoint (optional)",
+      "info": "Leave blank to summarize attached file names and sizes in the Shopify email."
+    },
+    {
+      "type": "header",
+      "content": "Submit Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "SUBMIT"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button outline border color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
     },
     {
       "type": "range",
@@ -195,8 +520,8 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
+      "label": "Padding top",
+      "default": 48
     },
     {
       "type": "range",
@@ -205,13 +530,13 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "label": "Padding bottom",
+      "default": 48
     }
   ],
   "presets": [
     {
-      "name": "t:sections.contact-form.presets.name"
+      "name": "Contact form"
     }
   ]
 }

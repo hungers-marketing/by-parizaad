@@ -1,0 +1,28 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "parizad-virtual-try-on",
+      "settings": {
+        "heading": "PARIZAD VIRTUAL TRY-ON STUDIO",
+        "subheading": "Upload your photo and virtually experience our handcrafted rings, bracelets, and necklaces with precision fitting.",
+        "privacy_notice": "100% Private & Browser-Processed. Your photograph stays strictly on your device and is never uploaded or saved to external servers.",
+        "default_category": "necklaces",
+        "max_upload_size_mb": 15,
+        "padding_top": 40,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

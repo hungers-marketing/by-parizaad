@@ -1,0 +1,706 @@
+{{ 'parizad-virtual-try-on.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'parizad-virtual-try-on.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .parizad-tryon__wrapper {
+    --tryon-max-width: {{ section.settings.content_max_width | default: 1400 }}px;
+    --tryon-radius: {{ section.settings.card_border_radius | default: 16 }}px;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  # Resolve merchant configured collections strictly from section settings
+  assign rings_coll = collections[section.settings.rings_collection]
+  assign bracelets_coll = collections[section.settings.bracelets_collection]
+  assign necklaces_coll = collections[section.settings.necklaces_collection]
+
+  # AI Runtime and Model URL Resolution (Configurable Hosting Architecture)
+  assign ai_mode = section.settings.ai_hosting_mode | default: 'theme_assets'
+  if ai_mode == 'custom_origin' and section.settings.custom_wasm_base_url != blank
+    assign mediapipe_js = 'mediapipe-vision.js' | asset_url
+    assign wasm_path = section.settings.custom_wasm_base_url
+    assign hand_model_url = section.settings.custom_hand_model_url | default: 'hand_landmarker.task' | asset_url
+    assign pose_model_url = section.settings.custom_pose_model_url | default: 'pose_landmarker_lite.task' | asset_url
+  else
+    # Default: Self-Hosted in Shopify Theme Assets
+    assign mediapipe_js = 'mediapipe-vision.js' | asset_url
+    assign hand_model_url = 'hand_landmarker.task' | asset_url
+    assign pose_model_url = 'pose_landmarker_lite.task' | asset_url
+    assign wasm_raw = 'vision_wasm_internal.js' | asset_url | split: 'vision_wasm_internal.js' | first
+    assign wasm_path = wasm_raw | rstrip
+  endif
+-%}
+
+<div
+  class="parizad-tryon-section color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding"
+  data-section-id="{{ section.id }}"
+  data-max-upload-mb="{{ section.settings.max_upload_size_mb | default: 15 }}"
+  data-default-category="{{ section.settings.default_category | default: 'rings' }}"
+  data-mediapipe-js-url="{{ mediapipe_js }}"
+  data-hand-model-url="{{ hand_model_url }}"
+  data-pose-model-url="{{ pose_model_url }}"
+  data-wasm-path="{{ wasm_path }}"
+>
+  <div class="parizad-tryon__wrapper">
+    {%- comment -%} Page Header & Privacy Notice {%- endcomment -%}
+    <div class="parizad-tryon__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      {%- if section.settings.heading != blank -%}
+        <h1 class="parizad-tryon__title">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="parizad-tryon__subtitle">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      {%- if section.settings.privacy_notice != blank -%}
+        <div class="parizad-tryon__privacy-badge" role="status">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>{{ section.settings.privacy_notice }}</span>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Main Two-Column Studio Layout {%- endcomment -%}
+    <div class="parizad-tryon__main">
+      {%- comment -%} LEFT: Canvas & Photo Studio {%- endcomment -%}
+      <div class="parizad-tryon__studio-card">
+        <div class="parizad-tryon__viewport" aria-label="Virtual try-on interactive canvas">
+          <canvas class="parizad-tryon__canvas"></canvas>
+
+          {%- comment -%} Empty State: Drag & Drop Photo Upload {%- endcomment -%}
+          <div class="parizad-tryon__upload-dropzone" role="button" tabindex="0">
+            <div class="parizad-tryon__upload-icon" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+            </div>
+            <h3 class="parizad-tryon__upload-title">Upload Your Photograph</h3>
+            <p class="parizad-tryon__upload-text">
+              Take or select a clear photo of your hand, wrist, or neckline to begin trying on jewelry.
+            </p>
+            <button type="button" class="parizad-tryon__upload-btn">
+              <span>Choose Photo</span>
+            </button>
+            <span class="parizad-tryon__upload-limits">
+              JPEG, PNG, or WebP up to {{ section.settings.max_upload_size_mb | default: 15 }}MB
+            </span>
+          </div>
+
+          <input
+            type="file"
+            class="parizad-tryon__file-input visually-hidden"
+            accept="image/jpeg,image/png,image/webp"
+            aria-label="Upload photo for virtual try-on"
+          >
+        </div>
+
+        {%- comment -%} Controls Bar (Visible once photo is uploaded) {%- endcomment -%}
+        <div class="parizad-tryon__controls-bar">
+          <div class="parizad-tryon__btn-group">
+            <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--autofit" title="Run real MediaPipe AI landmark detection">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="22" y1="12" x2="18" y2="12"></line>
+                <line x1="6" y1="12" x2="2" y2="12"></line>
+                <line x1="12" y1="6" x2="12" y2="2"></line>
+                <line x1="12" y1="22" x2="12" y2="18"></line>
+              </svg>
+              <span>AI Auto-Fit</span>
+            </button>
+            <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--landmarks" title="Toggle detected landmark overlay points">
+              <span>Show Landmarks</span>
+            </button>
+            <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--before-after" title="Toggle before/after original photo">
+              <span>Before / After</span>
+            </button>
+            <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--reset" title="Reset jewelry position">
+              <span>Reset</span>
+            </button>
+            <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--change-photo" title="Upload a different photo">
+              <span>Change</span>
+            </button>
+            <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--remove-photo" title="Remove photograph and return to upload">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              <span>Remove</span>
+            </button>
+          </div>
+
+          <button type="button" class="parizad-tryon__action-btn parizad-tryon__btn--guidelines" title="View photography tips">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Photo Tips</span>
+          </button>
+        </div>
+
+        {%- comment -%} Status Bar with Real Detection Information {%- endcomment -%}
+        <div class="parizad-tryon__detection-status" aria-live="polite">
+          <span class="parizad-tryon__status-dot"></span>
+          <span class="parizad-tryon__status-text">Upload a photograph to run MediaPipe landmark fitting</span>
+        </div>
+      </div>
+
+      {%- comment -%} RIGHT: Category Tabs, Product Catalog & Fine-Tuning Sliders {%- endcomment -%}
+      <div class="parizad-tryon__sidebar">
+        {%- comment -%} Category Tabs {%- endcomment -%}
+        <div class="parizad-tryon__tabs" role="tablist" aria-label="Jewelry Categories">
+          <button
+            type="button"
+            class="parizad-tryon__tab {% if section.settings.default_category == 'rings' or section.settings.default_category == blank %}is-active{% endif %}"
+            data-category="rings"
+            role="tab"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <circle cx="12" cy="7" r="2"></circle>
+            </svg>
+            <span>Rings</span>
+          </button>
+          <button
+            type="button"
+            class="parizad-tryon__tab {% if section.settings.default_category == 'bracelets' %}is-active{% endif %}"
+            data-category="bracelets"
+            role="tab"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="12" rx="10" ry="6"></ellipse>
+            </svg>
+            <span>Bracelets</span>
+          </button>
+          <button
+            type="button"
+            class="parizad-tryon__tab {% if section.settings.default_category == 'necklaces' %}is-active{% endif %}"
+            data-category="necklaces"
+            role="tab"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 4 4 Q 12 20 20 4"></path>
+              <circle cx="12" cy="14" r="3"></circle>
+            </svg>
+            <span>Necklaces & Pendants</span>
+          </button>
+        </div>
+
+        {%- comment -%} Catalog & Adjustments Card {%- endcomment -%}
+        <div class="parizad-tryon__panel">
+          <div class="parizad-tryon__panel-title">
+            <span>Select Product</span>
+            <small style="font-size: 1.15rem; color: #777; font-weight: normal;">Click to try on & purchase</small>
+          </div>
+
+          {%- comment -%} Product Thumbnails Grid (Populated from Real Shopify Catalog) {%- endcomment -%}
+          <div class="parizad-tryon__products-grid"></div>
+
+          {%- comment -%} Missing Collection Configuration Notice {%- endcomment -%}
+          <div class="parizad-tryon__missing-collection" style="display:none; padding:1.4rem; text-align:center; background:#FFF8E1; border:1px solid #FFE082; border-radius:8px; font-size:1.3rem; color:#6D4C41;">
+            <p style="margin:0 0 0.6rem 0; font-weight:600;">No Collection Selected</p>
+            <p style="margin:0; font-size:1.2rem;">Please select a collection for this category in the Shopify Theme Editor.</p>
+          </div>
+
+          {%- comment -%} Empty Collection Notice {%- endcomment -%}
+          <div class="parizad-tryon__empty-collection" style="display:none; padding:1.4rem; text-align:center; background:#F5F5F5; border:1px solid #E0E0E0; border-radius:8px; font-size:1.3rem; color:#616161;">
+            <p style="margin:0;">No products found in this collection.</p>
+          </div>
+
+          {%- comment -%} Product Asset Metafield Notice {%- endcomment -%}
+          <div class="parizad-tryon__asset-notice" style="display:none; font-size:1.2rem; color:#856404; background:#FFF3CD; border:1px solid #FFEEBA; border-radius:8px; padding:0.8rem 1.2rem; margin-top:1rem; line-height:1.4;">
+            <strong>Try-On Asset Pending:</strong> A transparent jewellery asset (<code>custom.tryon_asset</code>) has not been configured for this product. Automatic try-on is disabled. You can still view details or add this piece to your cart.
+          </div>
+
+          {%- comment -%} Finger Selection Pills (Rings only) {%- endcomment -%}
+          <div class="parizad-tryon__slider-group parizad-tryon__finger-group" style="margin-top: 1.4rem;">
+            <label class="parizad-tryon__slider-label">
+              <span>Target Finger:</span>
+            </label>
+            <div class="parizad-tryon__finger-pills">
+              <button type="button" class="parizad-tryon__finger-pill" data-finger="thumb">Thumb</button>
+              <button type="button" class="parizad-tryon__finger-pill" data-finger="index">Index</button>
+              <button type="button" class="parizad-tryon__finger-pill" data-finger="middle">Middle</button>
+              <button type="button" class="parizad-tryon__finger-pill is-active" data-finger="ring">Ring</button>
+              <button type="button" class="parizad-tryon__finger-pill" data-finger="pinky">Pinky</button>
+            </div>
+          </div>
+
+          {%- comment -%} Necklace Length Presets (Necklaces only) {%- endcomment -%}
+          <div class="parizad-tryon__slider-group parizad-tryon__necklace-group" style="display: none; margin-top: 1.4rem;">
+            <label class="parizad-tryon__slider-label">
+              <span>Necklace Length Drape:</span>
+            </label>
+            <div class="parizad-tryon__finger-pills">
+              <button type="button" class="parizad-tryon__length-pill" data-length="choker">Choker (14")</button>
+              <button type="button" class="parizad-tryon__length-pill is-active" data-length="short">Short (16-18")</button>
+              <button type="button" class="parizad-tryon__length-pill" data-length="medium">Medium (20-24")</button>
+              <button type="button" class="parizad-tryon__length-pill" data-length="long">Long (28"+)</button>
+            </div>
+          </div>
+
+          {%- comment -%} Manual Adjustment Sliders {%- endcomment -%}
+          <div class="parizad-tryon__adjust-panel">
+            <div class="parizad-tryon__slider-group">
+              <label class="parizad-tryon__slider-label" for="TryonSliderScale-{{ section.id }}">
+                <span>Scale / Size</span>
+                <span class="parizad-tryon__slider-val">100%</span>
+              </label>
+              <input
+                type="range"
+                id="TryonSliderScale-{{ section.id }}"
+                class="parizad-tryon__slider parizad-tryon__slider--scale"
+                min="0.1"
+                max="2.5"
+                step="0.02"
+                value="1.0"
+              >
+            </div>
+
+            <div class="parizad-tryon__slider-group">
+              <label class="parizad-tryon__slider-label" for="TryonSliderRot-{{ section.id }}">
+                <span>Rotation</span>
+                <span class="parizad-tryon__slider-val">0°</span>
+              </label>
+              <input
+                type="range"
+                id="TryonSliderRot-{{ section.id }}"
+                class="parizad-tryon__slider parizad-tryon__slider--rotation"
+                min="-180"
+                max="180"
+                step="1"
+                value="0"
+              >
+            </div>
+
+            <div class="parizad-tryon__slider-group">
+              <label class="parizad-tryon__slider-label" for="TryonSliderX-{{ section.id }}">
+                <span>Horizontal Position (X)</span>
+                <span class="parizad-tryon__slider-val">50%</span>
+              </label>
+              <input
+                type="range"
+                id="TryonSliderX-{{ section.id }}"
+                class="parizad-tryon__slider parizad-tryon__slider--x"
+                min="0.05"
+                max="0.95"
+                step="0.01"
+                value="0.5"
+              >
+            </div>
+
+            <div class="parizad-tryon__slider-group">
+              <label class="parizad-tryon__slider-label" for="TryonSliderY-{{ section.id }}">
+                <span>Vertical Position (Y)</span>
+                <span class="parizad-tryon__slider-val">50%</span>
+              </label>
+              <input
+                type="range"
+                id="TryonSliderY-{{ section.id }}"
+                class="parizad-tryon__slider parizad-tryon__slider--y"
+                min="0.05"
+                max="0.95"
+                step="0.01"
+                value="0.5"
+              >
+            </div>
+
+            <div class="parizad-tryon__slider-group">
+              <label class="parizad-tryon__slider-label" for="TryonSliderOpacity-{{ section.id }}">
+                <span>Opacity</span>
+                <span class="parizad-tryon__slider-val">100%</span>
+              </label>
+              <input
+                type="range"
+                id="TryonSliderOpacity-{{ section.id }}"
+                class="parizad-tryon__slider parizad-tryon__slider--opacity"
+                min="0.2"
+                max="1.0"
+                step="0.05"
+                value="1.0"
+              >
+            </div>
+          </div>
+
+          {%- comment -%} Cart Error Message Container {%- endcomment -%}
+          <div class="parizad-tryon__cart-error" style="display:none; color:#D32F2F; font-size:1.2rem; margin-top:1rem;" role="alert"></div>
+
+          {%- comment -%} Product CTA & Real Add to Cart {%- endcomment -%}
+          <div class="parizad-tryon__cta-bar">
+            <a href="{{ routes.all_products_collection_url }}" class="parizad-tryon__view-btn">
+              <span>View Product</span>
+            </a>
+            <button type="button" class="parizad-tryon__cart-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span class="parizad-tryon__cart-text">Add to Cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Photography Tips / Guidelines Modal {%- endcomment -%}
+    <div class="parizad-tryon__guidelines-modal" role="dialog" aria-modal="true" aria-label="Photography guidelines">
+      <div class="parizad-tryon__guidelines-content">
+        <button type="button" class="parizad-tryon__guidelines-close" aria-label="Close tips">&times;</button>
+        <h3 style="margin: 0 0 0.8rem 0; font-size: 2rem;">Tips for Best AI Try-On Results</h3>
+        <p style="color: #666; font-size: 1.35rem; margin: 0 0 1.6rem 0;">
+          Our MediaPipe computer vision model analyzes real body landmarks. For highest detection accuracy:
+        </p>
+
+        <div class="parizad-tryon__guidelines-list">
+          <div class="parizad-tryon__guideline-item">
+            <div class="parizad-tryon__guideline-icon">1</div>
+            <div class="parizad-tryon__guideline-text">
+              <strong>For Rings (Hand Landmarks):</strong>
+              <p>Keep your palm or back of hand facing the camera with fingers naturally spread in bright lighting.</p>
+            </div>
+          </div>
+          <div class="parizad-tryon__guideline-item">
+            <div class="parizad-tryon__guideline-icon">2</div>
+            <div class="parizad-tryon__guideline-text">
+              <strong>For Bracelets (Wrist Landmarks):</strong>
+              <p>Show your wrist and lower forearm clearly without tight sleeves covering the wrist joint.</p>
+            </div>
+          </div>
+          <div class="parizad-tryon__guideline-item">
+            <div class="parizad-tryon__guideline-icon">3</div>
+            <div class="parizad-tryon__guideline-text">
+              <strong>For Necklaces (Pose Landmarks):</strong>
+              <p>Take an eye-level portrait with both shoulders and collarbones visible against a clean background.</p>
+            </div>
+          </div>
+          <div class="parizad-tryon__guideline-item">
+            <div class="parizad-tryon__guideline-icon">4</div>
+            <div class="parizad-tryon__guideline-text">
+              <strong>Manual Fine-Tuning:</strong>
+              <p>You can drag, scale, or rotate jewelry directly on the canvas at any time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%}
+  Strict Real Shopify Product Catalog Serialization
+  No fallback to unrelated products. Uses only merchant-configured collections.
+{%- endcomment -%}
+<script type="application/json" id="ParizadTryonCatalog-{{ section.id }}">
+{
+  "rings": {
+    "collectionConfigured": {% if section.settings.rings_collection != blank and rings_coll != blank %}true{% else %}false{% endif %},
+    "products": [
+      {%- if rings_coll and rings_coll.products.size > 0 -%}
+        {%- for product in rings_coll.products limit: 20 -%}
+          {%- liquid
+            assign tryon_meta = product.metafields.custom.tryon_asset
+            assign tryon_enabled = product.metafields.custom.tryon_enabled.value
+            assign has_asset = false
+            assign asset_url = ""
+            if tryon_meta != blank and tryon_enabled != false
+              assign has_asset = true
+              assign asset_url = tryon_meta | image_url: width: 800
+            endif
+          -%}
+          {
+            "id": {{ product.id | json }},
+            "variantId": {{ product.selected_or_first_available_variant.id | default: 0 | json }},
+            "title": {{ product.title | json }},
+            "price": {{ product.price | money | json }},
+            "priceNumber": {{ product.price | json }},
+            "comparePrice": {% if product.compare_at_price > product.price %}{{ product.compare_at_price | money | json }}{% else %}""{% endif %},
+            "available": {{ product.available | json }},
+            "url": {{ product.url | json }},
+            "featuredImage": {{ product.featured_image | image_url: width: 300 | json }},
+            "hasTryonAsset": {{ has_asset | json }},
+            "tryonAssetUrl": {{ asset_url | json }},
+            "defaultScale": {{ product.metafields.custom.tryon_default_scale.value | default: 1.0 | json }},
+            "rotationOffset": {{ product.metafields.custom.tryon_rotation_offset.value | default: 0 | json }},
+            "anchorX": {{ product.metafields.custom.tryon_anchor_x.value | default: 0.5 | json }},
+            "anchorY": {{ product.metafields.custom.tryon_anchor_y.value | default: 0.5 | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      {%- endif -%}
+    ]
+  },
+  "bracelets": {
+    "collectionConfigured": {% if section.settings.bracelets_collection != blank and bracelets_coll != blank %}true{% else %}false{% endif %},
+    "products": [
+      {%- if bracelets_coll and bracelets_coll.products.size > 0 -%}
+        {%- for product in bracelets_coll.products limit: 20 -%}
+          {%- liquid
+            assign tryon_meta = product.metafields.custom.tryon_asset
+            assign tryon_enabled = product.metafields.custom.tryon_enabled.value
+            assign has_asset = false
+            assign asset_url = ""
+            if tryon_meta != blank and tryon_enabled != false
+              assign has_asset = true
+              assign asset_url = tryon_meta | image_url: width: 800
+            endif
+          -%}
+          {
+            "id": {{ product.id | json }},
+            "variantId": {{ product.selected_or_first_available_variant.id | default: 0 | json }},
+            "title": {{ product.title | json }},
+            "price": {{ product.price | money | json }},
+            "priceNumber": {{ product.price | json }},
+            "comparePrice": {% if product.compare_at_price > product.price %}{{ product.compare_at_price | money | json }}{% else %}""{% endif %},
+            "available": {{ product.available | json }},
+            "url": {{ product.url | json }},
+            "featuredImage": {{ product.featured_image | image_url: width: 300 | json }},
+            "hasTryonAsset": {{ has_asset | json }},
+            "tryonAssetUrl": {{ asset_url | json }},
+            "defaultScale": {{ product.metafields.custom.tryon_default_scale.value | default: 1.0 | json }},
+            "rotationOffset": {{ product.metafields.custom.tryon_rotation_offset.value | default: 0 | json }},
+            "anchorX": {{ product.metafields.custom.tryon_anchor_x.value | default: 0.5 | json }},
+            "anchorY": {{ product.metafields.custom.tryon_anchor_y.value | default: 0.5 | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      {%- endif -%}
+    ]
+  },
+  "necklaces": {
+    "collectionConfigured": {% if section.settings.necklaces_collection != blank and necklaces_coll != blank %}true{% else %}false{% endif %},
+    "products": [
+      {%- if necklaces_coll and necklaces_coll.products.size > 0 -%}
+        {%- for product in necklaces_coll.products limit: 20 -%}
+          {%- liquid
+            assign tryon_meta = product.metafields.custom.tryon_asset
+            assign tryon_enabled = product.metafields.custom.tryon_enabled.value
+            assign has_asset = false
+            assign asset_url = ""
+            if tryon_meta != blank and tryon_enabled != false
+              assign has_asset = true
+              assign asset_url = tryon_meta | image_url: width: 800
+            endif
+          -%}
+          {
+            "id": {{ product.id | json }},
+            "variantId": {{ product.selected_or_first_available_variant.id | default: 0 | json }},
+            "title": {{ product.title | json }},
+            "price": {{ product.price | money | json }},
+            "priceNumber": {{ product.price | json }},
+            "comparePrice": {% if product.compare_at_price > product.price %}{{ product.compare_at_price | money | json }}{% else %}""{% endif %},
+            "available": {{ product.available | json }},
+            "url": {{ product.url | json }},
+            "featuredImage": {{ product.featured_image | image_url: width: 300 | json }},
+            "hasTryonAsset": {{ has_asset | json }},
+            "tryonAssetUrl": {{ asset_url | json }},
+            "defaultScale": {{ product.metafields.custom.tryon_default_scale.value | default: 1.0 | json }},
+            "rotationOffset": {{ product.metafields.custom.tryon_rotation_offset.value | default: 0 | json }},
+            "anchorX": {{ product.metafields.custom.tryon_anchor_x.value | default: 0.5 | json }},
+            "anchorY": {{ product.metafields.custom.tryon_anchor_y.value | default: 0.5 | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      {%- endif -%}
+    ]
+  }
+}
+</script>
+
+{% schema %}
+{
+  "name": "Virtual Try-On Studio",
+  "tag": "section",
+  "class": "section section-parizad-virtual-try-on",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Page Header"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "PARIZAD VIRTUAL TRY-ON STUDIO",
+      "label": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "default": "Upload your photo and virtually experience our handcrafted rings, bracelets, and necklaces with precision fitting.",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "privacy_notice",
+      "default": "100% Private & Browser-Processed. Your photograph stays strictly on your device and is never uploaded or saved to external servers.",
+      "label": "Privacy notice badge"
+    },
+    {
+      "type": "header",
+      "content": "Try-On Settings"
+    },
+    {
+      "type": "select",
+      "id": "default_category",
+      "options": [
+        {
+          "value": "rings",
+          "label": "Rings"
+        },
+        {
+          "value": "bracelets",
+          "label": "Bracelets"
+        },
+        {
+          "value": "necklaces",
+          "label": "Necklaces & Pendants"
+        }
+      ],
+      "default": "necklaces",
+      "label": "Default category tab"
+    },
+    {
+      "type": "range",
+      "id": "max_upload_size_mb",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "MB",
+      "label": "Max photo upload size",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "AI Runtime & Model Hosting"
+    },
+    {
+      "type": "select",
+      "id": "ai_hosting_mode",
+      "label": "AI model hosting mode",
+      "options": [
+        {
+          "value": "theme_assets",
+          "label": "Theme Assets (Self-Hosted on Shopify)"
+        },
+        {
+          "value": "custom_origin",
+          "label": "Custom Merchant Static Origin"
+        }
+      ],
+      "default": "theme_assets",
+      "info": "Theme Assets hosts WASM and task models directly on Shopify. Custom Origin allows pointing to a merchant CDN directory."
+    },
+    {
+      "type": "text",
+      "id": "custom_wasm_base_url",
+      "label": "Custom WASM base directory URL",
+      "placeholder": "https://assets.byparizad.com/virtual-tryon/models",
+      "info": "Required only if 'Custom Merchant Static Origin' is selected. Do not add trailing slash."
+    },
+    {
+      "type": "text",
+      "id": "custom_hand_model_url",
+      "label": "Custom Hand Landmarker model URL",
+      "placeholder": "https://assets.byparizad.com/virtual-tryon/models/hand_landmarker.task"
+    },
+    {
+      "type": "text",
+      "id": "custom_pose_model_url",
+      "label": "Custom Pose Landmarker model URL",
+      "placeholder": "https://assets.byparizad.com/virtual-tryon/models/pose_landmarker_lite.task"
+    },
+    {
+      "type": "header",
+      "content": "Product Collections (Required for Live Products)"
+    },
+    {
+      "type": "collection",
+      "id": "rings_collection",
+      "label": "Rings collection"
+    },
+    {
+      "type": "collection",
+      "id": "bracelets_collection",
+      "label": "Bracelets collection"
+    },
+    {
+      "type": "collection",
+      "id": "necklaces_collection",
+      "label": "Necklaces & Pendants collection"
+    },
+    {
+      "type": "header",
+      "content": "Layout & Styling"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 1000,
+      "max": 1800,
+      "step": 40,
+      "unit": "px",
+      "label": "Container max width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Virtual Try-On Studio"
+    }
+  ]
+}
+{% endschema %}

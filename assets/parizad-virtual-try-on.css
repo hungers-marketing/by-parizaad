@@ -1,0 +1,818 @@
+/* ==========================================================================
+   PARIZAD VIRTUAL JEWELRY TRY-ON STUDIO — STYLESHEET
+   Scoped responsive styling for real-time browser-based jewelry fitting
+   ========================================================================== */
+
+.parizad-tryon-section {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.parizad-tryon__wrapper {
+  max-width: var(--tryon-max-width, 1440px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+}
+
+@media screen and (min-width: 750px) {
+  .parizad-tryon__wrapper {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Header & Privacy Badge
+   -------------------------------------------------------------------------- */
+.parizad-tryon__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.parizad-tryon__title {
+  margin: 0;
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: clamp(2.4rem, 3.5vw, 3.6rem);
+  line-height: 1.2;
+}
+
+.parizad-tryon__subtitle {
+  margin: 1rem auto 0;
+  max-width: 680px;
+  font-size: 1.45rem;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.parizad-tryon__privacy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #F3F7F4;
+  color: #2E6B38;
+  border: 1px solid rgba(46, 107, 56, 0.2);
+  border-radius: 30px;
+  padding: 0.6rem 1.6rem;
+  margin-top: 1.4rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.02rem;
+}
+
+.parizad-tryon__privacy-badge svg {
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Main Two-Column Studio Layout
+   -------------------------------------------------------------------------- */
+.parizad-tryon__main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.4rem;
+  align-items: start;
+}
+
+@media screen and (min-width: 990px) {
+  .parizad-tryon__main {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 3.6rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Left Column: Canvas & Photo Studio
+   -------------------------------------------------------------------------- */
+.parizad-tryon__studio-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--tryon-radius, 16px);
+  padding: 1.6rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  box-sizing: border-box;
+}
+
+@media screen and (min-width: 750px) {
+  .parizad-tryon__studio-card {
+    padding: 2.4rem;
+  }
+}
+
+/* Canvas Display Viewport */
+.parizad-tryon__viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 380px;
+  max-height: 640px;
+  background-color: #F8F7F5;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+.parizad-tryon__viewport.has-photo {
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.08);
+  background-color: #121212;
+}
+
+/* HTML5 Canvas */
+.parizad-tryon__canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.parizad-tryon__viewport.has-photo .parizad-tryon__canvas {
+  display: block;
+}
+
+.parizad-tryon__canvas.is-dragging {
+  cursor: grabbing;
+}
+
+/* Empty State / Photo Upload Area */
+.parizad-tryon__upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.parizad-tryon__viewport.has-photo .parizad-tryon__upload-dropzone {
+  display: none;
+}
+
+.parizad-tryon__upload-dropzone:hover {
+  background-color: #F1F0ED;
+}
+
+.parizad-tryon__upload-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  color: #121212;
+}
+
+.parizad-tryon__upload-title {
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin: 0 0 0.6rem 0;
+  color: #121212;
+}
+
+.parizad-tryon__upload-text {
+  font-size: 1.35rem;
+  color: #666666;
+  margin: 0 0 1.6rem 0;
+  max-width: 380px;
+}
+
+.parizad-tryon__upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #121212;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 30px;
+  padding: 1.2rem 2.8rem;
+  font-size: 1.35rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.parizad-tryon__upload-btn:hover {
+  background-color: #333333;
+  transform: translateY(-1px);
+}
+
+.parizad-tryon__upload-limits {
+  margin-top: 1.4rem;
+  font-size: 1.15rem;
+  color: #888888;
+}
+
+/* Floating Studio Controls Bar */
+.parizad-tryon__controls-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 0.4rem;
+}
+
+.parizad-tryon__viewport.has-photo + .parizad-tryon__controls-bar {
+  display: flex;
+}
+
+.parizad-tryon__btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.parizad-tryon__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #FFFFFF;
+  color: #121212;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 0.8rem 1.4rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.parizad-tryon__action-btn:hover {
+  background-color: #F5F5F5;
+  border-color: #121212;
+}
+
+.parizad-tryon__action-btn.is-active {
+  background-color: #121212;
+  color: #FFFFFF;
+  border-color: #121212;
+}
+
+/* Status / Detection Indicator */
+.parizad-tryon__detection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.25rem;
+  color: #555555;
+  background-color: #F8F8F8;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+}
+
+.parizad-tryon__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2E6B38;
+}
+
+.parizad-tryon__status-dot.is-detecting {
+  background-color: #E6A23C;
+  animation: parizadPulse 1s infinite alternate;
+}
+
+.parizad-tryon__status-dot.is-error {
+  background-color: #D32F2F;
+}
+
+@keyframes parizadPulse {
+  from { opacity: 0.4; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+/* --------------------------------------------------------------------------
+   Right Column: Category Tabs, Products & Controls
+   -------------------------------------------------------------------------- */
+.parizad-tryon__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Category Selection Tabs */
+.parizad-tryon__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  background-color: #F4F3F0;
+  padding: 0.6rem;
+  border-radius: 12px;
+}
+
+.parizad-tryon__tab {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 1.2rem 0.8rem;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.04rem;
+  color: #555555;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parizad-tryon__tab.is-active {
+  background-color: #FFFFFF;
+  color: #121212;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Product Catalog Panel */
+.parizad-tryon__panel {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--tryon-radius, 16px);
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.parizad-tryon__panel-title {
+  margin: 0 0 1.4rem 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Products Grid */
+.parizad-tryon__products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1.2rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  scrollbar-width: thin;
+}
+
+.parizad-tryon__product-card {
+  position: relative;
+  background-color: #FAF9F7;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.15s ease, background-color 0.2s ease;
+}
+
+.parizad-tryon__product-card:hover {
+  border-color: #121212;
+  background-color: #F5F4F0;
+  transform: translateY(-2px);
+}
+
+.parizad-tryon__product-card.is-selected {
+  border-color: #121212;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 1px #121212, 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.parizad-tryon__product-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parizad-tryon__product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.parizad-tryon__product-name {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #121212;
+  line-height: 1.25;
+  margin: 0 0 0.4rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.parizad-tryon__product-price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #121212;
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Product Mode: Current Product Summary & Variant Controls (Phase 2 & 3)
+   -------------------------------------------------------------------------- */
+.parizad-tryon__product-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.parizad-tryon__product-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  background-color: #FAF9F7;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 1.2rem 1.6rem;
+}
+
+.parizad-tryon__product-summary-thumb {
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parizad-tryon__product-summary-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.parizad-tryon__product-no-img {
+  font-size: 1.1rem;
+  color: #999;
+}
+
+.parizad-tryon__product-summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.parizad-tryon__engine-pill {
+  display: inline-flex;
+}
+
+.parizad-tryon__engine-tag {
+  display: inline-block;
+  background-color: #121212;
+  color: #FFFFFF;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+}
+
+.parizad-tryon__product-summary-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #121212;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parizad-tryon__product-summary-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.parizad-tryon__product-summary-price {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #121212;
+}
+
+.parizad-tryon__product-summary-compare {
+  font-size: 1.25rem;
+  color: #888888;
+  text-decoration: line-through;
+}
+
+.parizad-tryon__avail-badge {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.parizad-tryon__avail-badge.is-available {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.parizad-tryon__avail-badge.is-sold-out {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+.parizad-tryon__variant-selector-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.parizad-tryon__variant-select {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #121212;
+  font-size: 1.3rem;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.parizad-tryon__variant-select:focus {
+  outline: none;
+  border-color: #121212;
+}
+
+/* --------------------------------------------------------------------------
+   Manual Adjustments & Sliders Panel
+   -------------------------------------------------------------------------- */
+.parizad-tryon__adjust-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-top: 1.6rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.parizad-tryon__slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.parizad-tryon__slider-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #444444;
+}
+
+.parizad-tryon__slider-label span:last-child {
+  font-family: monospace;
+  font-weight: 600;
+  color: #121212;
+}
+
+.parizad-tryon__slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background: #E5E4E0;
+  outline: none;
+}
+
+.parizad-tryon__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #121212;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.parizad-tryon__slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.parizad-tryon__slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #121212;
+  cursor: pointer;
+  border: none;
+}
+
+/* Finger Selector Pills (for Rings) */
+.parizad-tryon__finger-pills {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.parizad-tryon__finger-pill {
+  background-color: #F4F3F0;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.2rem;
+  color: #444444;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.parizad-tryon__finger-pill.is-active {
+  background-color: #121212;
+  color: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   Selected Product CTA & Add to Cart Action
+   -------------------------------------------------------------------------- */
+.parizad-tryon__cta-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1.8rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.parizad-tryon__view-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: #121212;
+  border: 1.5px solid #121212;
+  border-radius: 30px;
+  padding: 1.2rem 2rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.04rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.parizad-tryon__view-btn:hover {
+  background-color: #121212;
+  color: #FFFFFF;
+}
+
+.parizad-tryon__cart-btn {
+  flex: 1.2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  background-color: #121212;
+  color: #FFFFFF;
+  border: 1.5px solid #121212;
+  border-radius: 30px;
+  padding: 1.2rem 2rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.04rem;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.parizad-tryon__cart-btn:hover {
+  background-color: #333333;
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Guidelines Modal / Drawer
+   -------------------------------------------------------------------------- */
+.parizad-tryon__guidelines-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.parizad-tryon__guidelines-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.parizad-tryon__guidelines-content {
+  background-color: #FFFFFF;
+  max-width: 560px;
+  width: 100%;
+  border-radius: 16px;
+  padding: 3rem;
+  position: relative;
+  box-sizing: border-box;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.parizad-tryon__guidelines-close {
+  position: absolute;
+  top: 1.6rem;
+  right: 1.6rem;
+  background: transparent;
+  border: none;
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #666666;
+}
+
+.parizad-tryon__guidelines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-top: 1.8rem;
+}
+
+.parizad-tryon__guideline-item {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.parizad-tryon__guideline-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #F4F3F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.parizad-tryon__guideline-text strong {
+  display: block;
+  font-size: 1.35rem;
+  color: #121212;
+  margin-bottom: 0.3rem;
+}
+
+.parizad-tryon__guideline-text p {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #666666;
+  line-height: 1.4;
+}

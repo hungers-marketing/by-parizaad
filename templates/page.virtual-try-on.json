@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "main": {
+      "type": "parizad-virtual-try-on",
+      "settings": {
+        "heading": "PARIZAD VIRTUAL TRY-ON STUDIO",
+        "subheading": "Upload your photo and virtually experience our handcrafted rings, bracelets, and necklaces with precision fitting.",
+        "privacy_notice": "100% Private & Browser-Processed. Your photograph stays strictly on your device and is never uploaded or saved to external servers.",
+        "max_upload_size_mb": 15,
+        "default_category": "necklaces",
+        "show_guidelines": true,
+        "show_before_after": true,
+        "enable_add_to_cart": true,
+        "padding_top": 40,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
